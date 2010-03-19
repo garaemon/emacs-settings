@@ -197,7 +197,7 @@ and the directory from emacs.d/"
             (package-directory pkg)))
 
 (defun cvs-checkout (cvs-root module-name pkg)
-  ;; NB:
+  ;; NB: 
   (call-process "cvs" nil t t "-d" cvs-root "co" module-name))
 
 (defun svn-checkout (svn-path pkg)
@@ -206,6 +206,30 @@ and the directory from emacs.d/"
 (defun git-clone (git-repo pkg)
   (call-process "git" nil t t "clone" git-repo (package-directory pkg)))
 
+(defun install-tar-ball (source pkg)
+  (destructuring-bind (tar-ball url &optional file-name) source
+    (let* ((%url (symbol->string url))
+           (%file-name (if file-name
+                           (symbol->string file-name)
+                         (file-name-nondirectory %url))))
+      (wget-and-expand-tar-ball %url %file-name pkg))))
+
+(defun install-cvs (source pkg)
+  (destructuring-bind (cvs cvs-root module) source
+    (let ((%cvs-root (symbol->string cvs-root))
+          (%module (symbol->string module)))
+      (cvs-checkout %cvs-root %module pkg))))
+
+(defun install-svn (source pkg)
+  (destructuring-bind (svn svn-path) source
+    (let ((%svn-path (symbol->string svn-path)))
+      (svn-checkout %svn-path pkg))))
+
+(defun install-git (source pkg)
+  (destructuring-bind (git git-repo) source
+    (let ((%git-repo (symbol->string git-repo)))
+      (git-clong %git-repo pkg))))
+
 (defun %install-package (source pkg)
   (if *emacs-settings-debug-p* (format* "parsing %s\n" source))
   (cond
@@ -213,24 +237,20 @@ and the directory from emacs.d/"
     (wget (symbol->string source) (package-directory pkg)))
    ((listp source)
     (case (car source)
-      (tar-ball                         ; (tar-ball url file-name)
-       (wget-and-expand-tar-ball (symbol->string (cadr source))
-                                 (symbol->string (caddr source))
-                                 pkg))
-      (cvs                              ; (cvs CVSROOT module)
-       (cvs-checkout (symbol->string (cadr source))
-                     (symbol->string (caddr source))
-                     pkg))
-      (svn                              ;(svn svn-path &optional module)
-       (svn-checkout (symbol->string (cadr source)) pkg))
+      (tar-ball
+       (install-tar-ball source pkg))
+      (cvs
+       (install-cvs source pkg))
+      (svn
+       (install-svn source pkg))
+       (svn-checkout (symbol->string (cadr source)) pkg)
       (git                              ;(git git-repo)
-       (git-clone (symbol->string (cadr source)) pkg))
-       (t ;; probably list of <source>
-        (dolist (s source)
-          (%install-package s pkg)
-          ))))
-   (t (error "not supported source %s" source)))
-  )
+       (install-git source pkg))
+      (t ;; probably list of <source>
+       (dolist (s source)
+         (%install-package s pkg)
+         ))))
+   (t (error "not supported source %s" source))))
 
 (defun update-sources ()
   "Update the all of source files.
