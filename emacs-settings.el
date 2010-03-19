@@ -52,10 +52,7 @@ the associated list, use package-accessors defined by `defpackage-accessor'."
       list
     (list (cons :name name)
           (cons :type type)
-          (cons :sources
-                (cond ((null sources) nil)
-                      ((atom sources) (list sources))
-                      (t sources)))
+          (cons :sources sources)
           (cons :documentation doc)
           (cons :depend depend)
           (cons :install install))))
@@ -179,14 +176,40 @@ and the directory from emacs.d/"
         (dir (package-directory pkg)))
     (unless (file-exists-p dir)
       (make-directory dir)
-      (dolist (s sources) (%install-package s pkg))
+      (%install-package sources pkg)
       ;; we need to add to load path
       (add-to-installed pkg))))
 
+(defun tar-xvzf (tar-path dir)
+  "call tar -xvzf `tar-path' and expands in `dir'"
+  (format* "now expanding %s to %s...\n" tar-path dir)
+  (call-process "tar" nil t t "xvzf" tar-path "-C" dir)
+  )
+
+(defun wget-and-expand-tar-ball (url-sym fname pkg)
+  (let ((url (symbol->string url-sym)))
+    (wget url (package-directory pkg))
+    (tar-xvzf (format "%s/%s" (package-directory pkg) fname)
+              (package-directory pkg)))
+  )
+
 (defun %install-package (source pkg)
+  (if *emacs-settings-debug-p* (format* "parsing %s\n" source))
   (cond
-   ((or (stringp source) (symbolp source)) ;url
+   ((or (stringp source) (symbolp source)) ;url, http://.*\.el
     (wget (symbol->string source) (package-directory pkg)))
+   ((listp source)
+    (case (car source)
+      (tar-ball                         ;.tar.gz
+       (wget-and-expand-tar-ball (symbol->string (cadr source))
+                                 (symbol->string (caddr source))
+                                 pkg))
+      (cvs )
+      (svn )
+      (t ;; probably list of <source>
+       (dolist (s source)
+         (%install-package s pkg)
+         ))))
    (t (error "not supported source %s" source)))
   )
 

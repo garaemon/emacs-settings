@@ -5,7 +5,7 @@
 ;;           &optional <documentation> <dependent-packages>
 ;;                     <install-commands>)
 ;; <type> := library | bootstrap
-;; <source-list> := (<source> ...)
+;; <source-list> := <source> | (<source> ...)
 ;; <source>      := <url> | <cvs-url> | <svn-url> | <git-url> | <local-path>
 ;;                        | <tar-ball>
 ;; <url> := symbol
@@ -16,7 +16,7 @@
 ;; <tar-ball>   := (tar-ball <url>)
 (http://github.com/garaemon/emacs-settings/raw/master/sources/list.el
  (navi-2ch library
-  (tar-ball http://sourceforge.net/projects/navi2ch/files/navi2ch/navi2ch-1.8.3/navi2ch-1.8.3.tar.gz/download)
+  (tar-ball http://sourceforge.net/projects/navi2ch/files/navi2ch/navi2ch-1.8.3/navi2ch-1.8.3.tar.gz/download navi2ch-1.8.3.tar.gz)
   "2ch viewer")
  (navi-2ch-setting bootstrap
   nil
