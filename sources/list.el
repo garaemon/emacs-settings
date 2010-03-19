@@ -14,7 +14,7 @@
 ;; <local-path> := (local <path>)
 ;; <path>       := <string>
 ;; <tar-ball>   := (tar-ball <url>)
-(http://garaemon.net/emacs-settings/sources/list.el
+(http://github.com/garaemon/emacs-settings/raw/master/sources/list.el
  (navi-2ch library
   (tar-ball http://sourceforge.net/projects/navi2ch/files/navi2ch/navi2ch-1.8.3/navi2ch-1.8.3.tar.gz/download)
   "2ch viewer")

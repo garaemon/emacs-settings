@@ -150,6 +150,8 @@ emacs.d/installed"
     files))
 
 (defun find-package (name packages)
+  "`packages' is a list of package alists. This function find a package alist
+from `packages' whose name is `name'."
   (cond ((symbolp name)
          (find name packages :key #'name-of))
         ((stringp name)
