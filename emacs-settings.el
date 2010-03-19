@@ -99,9 +99,12 @@ other packages it depends on. "
   (expand-file-name (format "%s/%s" *emacs-settings-site-dir* (name-of pkg))))
 
 (defun installed-file ()
+  "returns the `installed' file path"
   (format "%s/installed" *emacs-settings-site-dir*))
 
 (defun installed-package-from-installed-file ()
+  "returns a list of the package alists which are described in
+emacs.d/installed"
   (if (file-exists-p (installed-file))
       (with-open-file (f (installed-file))
         (mapcar #'(lambda (x)
