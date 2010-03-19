@@ -116,13 +116,13 @@ other packages it depends on. "
              (current-buffer)))))
 
 (defun remove-from-installed (name)
+  "remove `name' from emacs.d/installed"
   (let ((installed-file (format "%s/installed" *emacs-settings-site-dir*)))
     (when (file-exists-p installed-file)
       (let ((installed (installed-package-from-installed-file)))
         (with-temp-file installed-file
           (print (remove name installed :key #'car)
                  (current-buffer)))))))
-
 
 (defun delete-directory-recursive (dir)
   "this function works like `rm -rf dir'"
@@ -136,7 +136,9 @@ other packages it depends on. "
     files))
 
 (defun uninstall-package-from-name (name)
-  "This function is called from "
+  "This function is called by emacs-setting `uninstall' command.
+`uninstall' comamnd removes the package entry from emacs.d/installed
+and the directory from emacs.d/"
   (let ((installed (installed-package-from-installed-file)))
     (let ((target (find name installed :key #'car)))
       (if target
