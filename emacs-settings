@@ -1,0 +1,129 @@
+#!/bin/bash
+# emacs-settings
+# 
+# written by R.Ueda (garaemon)
+
+# copied from clbuild.
+readlink_e() {
+    self="$0"
+    while test -h "$self"; do
+        cd "$(dirname $self)"
+        self=`readlink "$self"`
+    done
+    cd "$(dirname $self)"
+    pwd
+}
+
+AUTO_INSTALL_URL="http://www.emacswiki.org/emacs/download/auto-install.el"
+BASE=$(readlink_e)
+SOURCES_DIR="$BASE/sources"
+EMACSLISP_DIR="$BASE/emacs.d"
+EMACS_SETTINGS_ELISP="$BASE/emacs-setting.el"
+DEBUG_MODE=false
+EMACS=emacs
+
+debug_mode() {
+    return `test "${DEBUG_MODE}" = "true"`
+}
+
+debug_echo() {
+    echo $@ 1>&2
+}
+
+emacs_settings_setup() {
+    cat <<EOF
+;; emacs-settings 
+(setq load-path (cons "$EMACSLISP_DIR" load-path))
+EOF
+}
+
+emacs_settings_bootstrap() {
+    if [ ! -e $EMACSLISP_DIR/auto-install.el ] ; then
+        if debug_mode ; then
+            debug_echo now installing aut-install.el
+        fi
+        wget $AUTO_INSTALL_URL -P $EMACSLISP_DIR
+    fi
+}
+
+call_emacs() {
+    ARGS="$@"
+    "$EMACS" -batch -l "$BASE/emacs-settings.el" \
+        -eval "(setup \"$BASE\" \"${DEBUG_MODE}\")" \
+        -eval "$ARGS"
+}
+
+emacs_settings_install() {
+    local target_packages="$@"
+    if debug_mode ; then
+        debug_echo installing $target_packages
+    fi
+    call_emacs "(install-package-with-dependencies-from-name \"${target_packages}\")"
+}
+
+emacs_settings_packages() {
+    call_emacs "(enumerate-packages)"
+}
+
+main() {
+        # parse options
+        while getopts de: OPT
+        do
+            case $OPT in
+                d ) DEBUG_MODE=true
+                    shift ;;
+                e ) EMACS="$OPTARG"
+                    shift 2;;
+                * ) usage 1>&2
+                    exit 1;;
+            esac
+        done
+        
+        COMMAND=$1
+        shift
+        ARGS=$@
+        
+        if debug_mode ; then
+            debug_echo "commands -> $COMMAND"
+            debug_echo "args -> $ARGS"
+        fi
+        
+        # run command
+        case "$COMMAND" in
+            "packages" ) emacs_settings_packages;;
+            "install" ) emacs_settings_install $ARGS;;
+            "uninstall" ) emacs_settings_uninstall $ARGS;;
+            "setup" ) emacs_settings_setup $ARGS;;
+            "bootstrap" ) emacs_settings_bootstrap $ARGS;;
+            "help" ) usage;;
+            * ) usage 1>&2
+                exit 1;;
+        esac
+}
+
+usage() {
+    cat <<EOF
+Usage: $BASE [OPTIONS...] COMMAND [ARGS...]
+
+Supported commands are:
+  packages [installed]  show a list of packeges. If you specify `installed',
+                        only shows the installed packages.
+  install PACKEGES...   install these packeges
+  uninstall PACKEGES... uninstall these packeges
+  setup                 echo some bootstrap codes to use the packeges
+                        installed by emacs-settings in you emacs.
+  bootstrap             install the emacs lisp packages required
+                        by emacs-settings.
+
+Supported options are:
+  -d                    run in debug mode.
+  -e EMACS              emacs-setting calls emacs in batch mode. you can
+                        specify emacs use this option.
+
+Example:
+  $BASE install anything
+  $BASE setup >> ~/.emacs
+EOF
+}
+
+main $@
