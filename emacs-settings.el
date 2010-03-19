@@ -191,12 +191,20 @@ and the directory from emacs.d/"
   (call-process "tar" nil t t "xvzf" tar-path "-C" dir)
   )
 
-(defun wget-and-expand-tar-ball (url-sym fname pkg)
-  (let ((url (symbol->string url-sym)))
-    (wget url (package-directory pkg))
-    (tar-xvzf (format "%s/%s" (package-directory pkg) fname)
-              (package-directory pkg)))
-  )
+(defun wget-and-expand-tar-ball (url fname pkg)
+  (wget url (package-directory pkg))
+  (tar-xvzf (format "%s/%s" (package-directory pkg) fname)
+            (package-directory pkg)))
+
+(defun cvs-checkout (cvs-root module-name pkg)
+  ;; NB:
+  (call-process "cvs" nil t t "-d" cvs-root "co" module-name))
+
+(defun svn-checkout (svn-path pkg)
+  (call-process "svn" nil t t "co" svn-path (package-directory pkg)))
+  
+(defun git-clone (git-repo pkg)
+  (call-process "git" nil t t "clone" git-repo (package-directory pkg)))
 
 (defun %install-package (source pkg)
   (if *emacs-settings-debug-p* (format* "parsing %s\n" source))
@@ -205,16 +213,22 @@ and the directory from emacs.d/"
     (wget (symbol->string source) (package-directory pkg)))
    ((listp source)
     (case (car source)
-      (tar-ball                         ;.tar.gz
+      (tar-ball                         ; (tar-ball url file-name)
        (wget-and-expand-tar-ball (symbol->string (cadr source))
                                  (symbol->string (caddr source))
                                  pkg))
-      (cvs )
-      (svn )
-      (t ;; probably list of <source>
-       (dolist (s source)
-         (%install-package s pkg)
-         ))))
+      (cvs                              ; (cvs CVSROOT module)
+       (cvs-checkout (symbol->string (cadr source))
+                     (symbol->string (caddr source))
+                     pkg))
+      (svn                              ;(svn svn-path &optional module)
+       (svn-checkout (symbol->string (cadr source)) pkg))
+      (git                              ;(git git-repo)
+       (git-clone (symbol->string (cadr source)) pkg))
+       (t ;; probably list of <source>
+        (dolist (s source)
+          (%install-package s pkg)
+          ))))
    (t (error "not supported source %s" source)))
   )
 

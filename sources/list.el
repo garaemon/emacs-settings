@@ -16,12 +16,12 @@
 ;; <tar-ball>   := (tar-ball <url>)
 (http://github.com/garaemon/emacs-settings/raw/master/sources/list.el
  (navi-2ch library
-  (tar-ball http://sourceforge.net/projects/navi2ch/files/navi2ch/navi2ch-1.8.3/navi2ch-1.8.3.tar.gz/download navi2ch-1.8.3.tar.gz)
-  "2ch viewer")
+           (tar-ball http://sourceforge.net/projects/navi2ch/files/navi2ch/navi2ch-1.8.3/navi2ch-1.8.3.tar.gz/download navi2ch-1.8.3.tar.gz)
+           "2ch viewer")
  (navi-2ch-setting bootstrap
-  nil
-  "setting for 2ch viewer"
-  (navi-2ch))
+                   nil
+                   "setting for 2ch viewer"
+                   (navi-2ch))
  (clmemo library
          (tar-ball
           http://isweb22.infoseek.co.jp/computer/pop-club/emacs/clmemo-1.0rc3.tar.gz
@@ -33,7 +33,7 @@
        "Presentation Mode")
  (slime library
         (cvs :pserver:anonymous:anonymous@common-lisp.net:/project/slime/cvsroot slime)
-  "Common Lisp IDE")
+        "Common Lisp IDE")
  (twittering library
              (git git://github.com/hayamiz/twittering-mode.git)
              "Post to twitter and get your time line")
