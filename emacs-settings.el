@@ -95,16 +95,20 @@ other packages it depends on. "
       (install-package p))))
 
 (defun package-directory (pkg)
-  ""
-  (expand-file-name (format "%s/%s" *emacs-settings-site-dir*
-                            (name-of pkg))))
+  "returns the path that pkg is installed"
+  (expand-file-name (format "%s/%s" *emacs-settings-site-dir* (name-of pkg))))
 
 (defun installed-file ()
   (format "%s/installed" *emacs-settings-site-dir*))
 
 (defun installed-package-from-installed-file ()
   (if (file-exists-p (installed-file))
-      (with-open-file (f (installed-file)) (read f))))
+      (with-open-file (f (installed-file))
+        (mapcar #'(lambda (x)
+                    (destructuring-bind (name . type) x
+                      ;; find package from source file...
+                      (find-package-alist-from-source-files name)))
+                (read f)))))
 
 (defun add-to-installed (pkg)
   "write package name and directory to *emacs-settings-site-dir*/installed"
@@ -115,40 +119,55 @@ other packages it depends on. "
                    installed)
              (current-buffer)))))
 
-(defun remove-from-installed (name)
-  "remove `name' from emacs.d/installed"
-  (let ((installed-file (format "%s/installed" *emacs-settings-site-dir*)))
-    (when (file-exists-p installed-file)
+(defun remove-from-installed (pkg)
+  "remove `pkg' from emacs.d/installed"
+  (let ((installed-file (installed-file))
+        (name (name-of pkg)))
+    (when (file-exists-p installed-file) ;check emacs.d/installed existing
       (let ((installed (installed-package-from-installed-file)))
         (with-temp-file installed-file
-          (print (remove name installed :key #'car)
+          (print (remove-if #'(lambda (x) (eq name (name-of x))) installed)
                  (current-buffer)))))))
 
 (defun delete-directory-recursive (dir)
   "this function works like `rm -rf dir'"
-  (let ((files (directory-files "." nil "[^\.*]")))
+  (if *emacs-settings-debug-p* (format* "delete redursive %s \n" dir))
+  (let ((files (directory-files dir t "[^\.*]")))
     (dolist (f files)
       (if (file-directory-p f)
-          ;; if f is a directory, call delete-directory-recursive recursively
-          (delete-directory-recursive f)
-        ;; if f is not a directory, call delete-file to remove f
-        (delete-file f)))
+          (progn
+            ;; if f is a directory, call delete-directory-recursive recursively
+            (if *emacs-settings-debug-p* (format* "%s is a directory\n" f))
+            (delete-directory-recursive f))
+        (progn
+          ;; if f is not a directory, call delete-file to remove f
+          (if *emacs-settings-debug-p* (format* "%s is a file\n" f))
+          (delete-file f))))
+    (delete-directory dir)
     files))
+
+(defun find-package (name packages)
+  (cond ((symbolp name)
+         (find name packages :key #'name-of))
+        ((stringp name)
+         (find name packages :key #'name-of
+               :test #'(lambda (x y) (string= x (symbol->string y)))))))
 
 (defun uninstall-package-from-name (name)
   "This function is called by emacs-setting `uninstall' command.
 `uninstall' comamnd removes the package entry from emacs.d/installed
 and the directory from emacs.d/"
   (let ((installed (installed-package-from-installed-file)))
-    (let ((target (find name installed :key #'car)))
+    (let ((target (find-package name installed)))
       (if target
           (progn
+            (if *emacs-settings-debug-p*
+                (format* "%s is found %s\n" name target))
             ;; remove the entry from emacs.d/installed
-            (remove-from-installed name)
-            ;; remove installed
-            
-            )
-        ))))
+            (remove-from-installed target)
+            ;; remove directory from emacs.d/
+            (delete-directory-recursive (package-directory target)))
+        (error "%s is not found" name)))))
 
 (defun install-package (pkg)
   (let ((sources (sources-of pkg))
@@ -192,6 +211,11 @@ Search .el file in emacs-settings/sources directory"
       (dolist (f source-files)
         (setq packages (append packages (parse-source f))))
       packages)))
+
+(defun find-package-alist-from-source-files (name)
+  "find a package alist whose name is `name' from source files"
+  (let ((all-packages (get-all-packages)))
+    (find name all-packages :key #'name-of)))
 
 (defun symbol->string (sym)
   (format "%s" sym))

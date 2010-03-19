@@ -65,6 +65,14 @@ emacs_settings_packages() {
     call_emacs "(enumerate-packages)"
 }
 
+emacs_settings_uninstall() {
+    local target_packages="$@"
+    if debug_mode ; then
+        debug_echo uninstalling $target_packages
+    fi
+    call_emacs "(uninstall-package-from-name \"$target_packages\")"
+}
+
 main() {
         # parse options
         while getopts de: OPT
