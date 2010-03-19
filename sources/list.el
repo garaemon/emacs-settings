@@ -22,24 +22,21 @@
   nil
   "setting for 2ch viewer"
   (navi-2ch))
- (keisen-mule library
-  nil
-  "")
- (speedbar library
-  nil
-  "")
  (clmemo library
-  nil
+         (tar-ball
+          http://isweb22.infoseek.co.jp/computer/pop-club/emacs/clmemo-1.0rc3.tar.gz
+          clmemo-1.0rc3.tar.gz)
   "ChangeLog Memo")
  (goby library
-  nil
-  "Presentation Mode")
+       (tar-ball http://www.mew.org/~kazu/proj/goby/goby-1.0.tar.gz
+                 goby-1.0.tar.gz)
+       "Presentation Mode")
  (slime library
-  nil
+        (cvs :pserver:anonymous:anonymous@common-lisp.net:/project/slime/cvsroot slime)
   "Common Lisp IDE")
  (twittering library
-  nil
-  "Post to twitter and get your time line")
+             (git git://github.com/hayamiz/twittering-mode.git)
+             "Post to twitter and get your time line")
  (org library
   nil
   ""
@@ -101,20 +98,21 @@
    http://www.emacswiki.org/emacs/download/synonyms.el)
   "")
  (ddskk library
-  nil
-  "IME for Japanese. SKK(Super Kanji Kanzen) server and client.")
+        (tar-ball http://openlab.ring.gr.jp/skk/maintrunk/ddskk-14.0.91.tar.gz
+                  ddskk-14.0.91.tar.gz)
+        "IME for Japanese. SKK(Super Kanji Kanzen) server and client.")
  (shell-pop library
-  http://www.emacswiki.org/emacs/download/shell-pop.el
-  "popping up shell-mode buffer")
+            http://www.emacswiki.org/emacs/download/shell-pop.el
+            "popping up shell-mode buffer")
  (dabbrev-ja library
-  http://namazu.org/~tsuchiya/elisp/dabbrev-ja.el
-  "dabbrev mode for japanese")
+             http://namazu.org/~tsuchiya/elisp/dabbrev-ja.el
+             "dabbrev mode for japanese")
  (dabbrev-ja-setting bootstrap
-  http://namazu.org/~tsuchiya/elisp/dabbrev-ja.el
-  "settings for dabbrev-ja"
-  (dabbrev-ja))
+                     nil
+                     "settings for dabbrev-ja"
+                     (dabbrev-ja))
  (shell-pop-setting bootstrap
-  http://garaemon.net/emacs-settings/shell-pop/shell-pop-garaemon.el
-  "settings for shell-pop written by garaemon"
-  (shell-pop))
+                    nil
+                    "settings for shell-pop written by garaemon"
+                    (shell-pop))
  )
