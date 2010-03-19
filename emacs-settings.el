@@ -116,7 +116,9 @@ emacs.d/installed"
         (installed (installed-package-from-installed-file)))
     (with-temp-file installed-file
       (print (cons (cons (name-of pkg) (type-of* pkg))
-                   installed)
+                   (mapcar #'(lambda (x)
+                               (cons (name-of x) (type-of* x)))
+                           installed))
              (current-buffer)))))
 
 (defun remove-from-installed (pkg)
@@ -126,8 +128,11 @@ emacs.d/installed"
     (when (file-exists-p installed-file) ;check emacs.d/installed existing
       (let ((installed (installed-package-from-installed-file)))
         (with-temp-file installed-file
-          (print (remove-if #'(lambda (x) (eq name (name-of x))) installed)
-                 (current-buffer)))))))
+          (print
+           (mapcar #'(lambda (x)
+                       (cons (name-of x) (type-of* x)))
+                   (remove-if #'(lambda (x) (eq name (name-of x))) installed))
+           (current-buffer)))))))
 
 (defun delete-directory-recursive (dir)
   "this function works like `rm -rf dir'"
@@ -246,6 +251,8 @@ Search .el file in emacs-settings/sources directory"
     (find name all-packages :key #'name-of)))
 
 (defun symbol->string (sym)
+  "convert symbol to string. `string' function in Common Lisp
+is not supported in Emacs Lisp?"
   (format "%s" sym))
 
 (defun enumerate-packages ()

@@ -32,8 +32,10 @@ debug_echo() {
 
 emacs_settings_setup() {
     cat <<EOF
-;; emacs-settings 
-(setq load-path (cons "$EMACSLISP_DIR" load-path))
+;; emacs-settings
+(let ((default-directory "$EMACSLISP_DIR"))
+  (setq load-path (cons default-directory load-path))
+  (normal-top-level-add-subdirs-to-load-path))
 EOF
 }
 
