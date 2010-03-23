@@ -176,6 +176,46 @@ and the directory from emacs.d/"
             (delete-directory-recursive (package-directory target)))
         (error "%s is not found" name)))))
 
+(defun exec-install-commands (pkg)
+  "run install commands specified in sources file"
+  (let ((installs (install-of pkg)))
+    (dolist (install installs)
+      (run-install-command install pkg))
+    ))
+
+(defun run-install-command (command pkg)
+  "execute a install command `command'."
+  (cond ((stringp command) (run-install-shell-comamnd command pkg))
+        ((keywordp command) (run-install-keyword-command command pkg))
+        (t (eval command))))            ;just eval it!
+
+(defun run-install-shell-comamnd (command pkg)
+  (if (= (call-process "cd" nil t t (package-directory pkg) "&&" command) 0)
+      t
+    (error "error has occurred")))
+
+(defun run-install-keyword-command (command pkg)
+  (case command
+    (:byte-compile
+     (let ((files (directory-files (package-directory pkg) t ".*\.el")))
+       ;; first of all, load all files
+       (dolist (f files)
+         (unless (ignore-errors (byte-compile-file f t))
+           (format* "Error: compiling %s is failed\n" f)))))
+     ;;(byte-recompile-directory (package-directory pkg)))
+    (t (error "%s is not supported" command))))
+  
+(defun update-emacs-settings-site-dir ()
+  (let ((root-directory *emacs-settings-site-dir*))
+    (%update-emacs-settings-site-dir root-directory)))
+
+(defun %update-emacs-settings-site-dir (dir)
+  (let ((dirs (remove-if-not #'file-directory-p
+                             (directory-files dir t "[^\.*]"))))
+    (dolist (d dirs)
+      (%update-emacs-settings-site-dir d))
+    (setq load-path (cons dir load-path))))
+
 (defun install-package (pkg)
   "install a package `pkg'. First of all, make a directory
 whose name is (name-of pkg), "
@@ -184,6 +224,8 @@ whose name is (name-of pkg), "
     (unless (file-exists-p dir)
       (make-directory dir)              ;first of all, make directory
       (%install-package sources pkg)    ;download the source codes
+      (update-emacs-settings-site-dir)
+      (exec-install-commands pkg)
       ;; we need to add to load path
       (add-to-installed pkg))))         ;add a package to emacs.d/installed
 

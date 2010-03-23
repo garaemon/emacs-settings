@@ -18,6 +18,17 @@
 ;; <path>         := <url>
 ;; <path>         := <string>
 ;; <tar-ball>     := (tar-ball <url>)
+;; <dependent-packages> := (<package-name>)
+;; <package-name> := <symbol> | <string>
+;; <install-commands> := (<install-command> <install-command> ...)
+;; <install-command>  := <lisp-command> | <shell-command> | <install-keyword>
+;; <install-keyword>  := :byte-compile
+;; <lisp-command>     := <S-expression>
+;; <shell-command>    := <string>
+;; You can use some keywords in <shell-command>.
+;; Currently supported keywords are:
+;;   $EMACS -> path-to-emacs
+;;   $PACKAGE -> path-to-package
 (http://github.com/garaemon/emacs-settings/raw/master/sources/list.el
  (navi-2ch library
            (tar-ball http://sourceforge.net/projects/navi2ch/files/navi2ch/navi2ch-1.8.3/navi2ch-1.8.3.tar.gz/download navi2ch-1.8.3.tar.gz)
@@ -30,17 +41,24 @@
          (tar-ball
           http://isweb22.infoseek.co.jp/computer/pop-club/emacs/clmemo-1.0rc3.tar.gz
           clmemo-1.0rc3.tar.gz)
-  "ChangeLog Memo")
+         "ChangeLog Memo"
+         nil
+         (:byte-compile))
  (goby library
        (tar-ball http://www.mew.org/~kazu/proj/goby/goby-1.0.tar.gz
                  goby-1.0.tar.gz)
-       "Presentation Mode")
+       "Presentation Mode"
+       nil
+       ("cd goby-1.0; make"))
+       ;;(:byte-compile))
  (slime library
         (cvs :pserver:anonymous:anonymous@common-lisp.net:/project/slime/cvsroot slime)
         "Common Lisp IDE")
  (twittering library
              (git git://github.com/hayamiz/twittering-mode.git)
-             "Post to twitter and get your time line")
+             "Post to twitter and get your time line"
+             nil
+             (:byte-compile))
  (org library
   nil
   ""
@@ -81,7 +99,9 @@
    http://www.emacswiki.org/emacs/download/descbinds-anything.el
    http://www.emacswiki.org/emacs/download/anything-grep.el
    http://www.emacswiki.org/emacs/download/anything-startup.el)
-  "Integrated inteface to anything")
+  "Integrated inteface to anything"
+  nil
+  (:byte-compile))
  (icicles library
   (http://www.emacswiki.org/emacs/download/icicles.el
    http://www.emacswiki.org/emacs/download/icicles-chg.el
@@ -100,17 +120,23 @@
    http://www.emacswiki.org/emacs/download/icomplete+.el
    http://www.emacswiki.org/emacs/download/hexrgb.el
    http://www.emacswiki.org/emacs/download/synonyms.el)
-  "")
+  ""
+  nil
+  (:byte-compile))
  (ddskk library
         (tar-ball http://openlab.ring.gr.jp/skk/maintrunk/ddskk-14.0.91.tar.gz
                   ddskk-14.0.91.tar.gz)
         "IME for Japanese. SKK(Super Kanji Kanzen) server and client.")
  (shell-pop library
             http://www.emacswiki.org/emacs/download/shell-pop.el
-            "popping up shell-mode buffer")
+            "popping up shell-mode buffer"
+            nil
+            (:byte-compile))
  (dabbrev-ja library
              http://namazu.org/~tsuchiya/elisp/dabbrev-ja.el
-             "dabbrev mode for japanese")
+             "dabbrev mode for japanese"
+             nil
+             (:byte-compile))
  (dabbrev-ja-setting bootstrap
                      nil
                      "settings for dabbrev-ja"
