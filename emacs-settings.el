@@ -197,13 +197,17 @@ and the directory from emacs.d/"
             (package-directory pkg)))
 
 (defun cvs-checkout (cvs-root module-name pkg)
+  "call cvs -d `cvs-root' co -d `package-directory' `module-name'"
   ;; NB: 
-  (call-process "cvs" nil t t "-d" cvs-root "co" module-name))
+  (call-process "cvs" nil t t "-d" cvs-root
+                "co" "-d" (package-directory pkg) module-name))
 
 (defun svn-checkout (svn-path pkg)
+  "call svn co `svn-path' `package-directory'"
   (call-process "svn" nil t t "co" svn-path (package-directory pkg)))
   
 (defun git-clone (git-repo pkg)
+  "call git clone `git-repo' `package-directory'"
   (call-process "git" nil t t "clone" git-repo (package-directory pkg)))
 
 ;; install-xxx takes source list and package alist
@@ -211,7 +215,9 @@ and the directory from emacs.d/"
   (destructuring-bind (tar-ball url &optional file-name) source
     (let* ((%url (symbol->string url))
            (%file-name (if file-name
+                           ;; if file-name is specified
                            (symbol->string file-name)
+                         ;; unless file-name is specified, use basename of url
                          (file-name-nondirectory %url))))
       (wget-and-expand-tar-ball %url %file-name pkg))))
 
@@ -285,10 +291,11 @@ is not supported in Emacs Lisp?"
   (format "%s" sym))
 
 (defun enumerate-packages ()
-  "called in `packages' commend"
+  "called in `packages' commend. print out name and description of packages
+to standard out."
   (if *emacs-settings-debug-p* (format* "enumerating packages...\n"))
   (let ((packages (get-all-packages)))
     (dolist (pkg packages)
       (format* "%s\n" (name-of pkg))
-      (format* "   %s\n" (documentation-of pkg))
-    )))
+      (format* "   %s\n" (documentation-of pkg)))
+    nil))
