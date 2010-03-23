@@ -206,6 +206,7 @@ and the directory from emacs.d/"
 (defun git-clone (git-repo pkg)
   (call-process "git" nil t t "clone" git-repo (package-directory pkg)))
 
+;; install-xxx takes source list and package alist
 (defun install-tar-ball (source pkg)
   (destructuring-bind (tar-ball url &optional file-name) source
     (let* ((%url (symbol->string url))
@@ -237,15 +238,10 @@ and the directory from emacs.d/"
     (wget (symbol->string source) (package-directory pkg)))
    ((listp source)
     (case (car source)
-      (tar-ball
-       (install-tar-ball source pkg))
-      (cvs
-       (install-cvs source pkg))
-      (svn
-       (install-svn source pkg))
-       (svn-checkout (symbol->string (cadr source)) pkg)
-      (git                              ;(git git-repo)
-       (install-git source pkg))
+      (tar-ball (install-tar-ball source pkg))
+      (cvs (install-cvs source pkg))
+      (svn (install-svn source pkg))
+      (git (install-git source pkg))
       (t ;; probably list of <source>
        (dolist (s source)
          (%install-package s pkg)
@@ -253,8 +249,9 @@ and the directory from emacs.d/"
    (t (error "not supported source %s" source))))
 
 (defun update-sources ()
-  "Update the all of source files.
-Each source file has its URL in car."
+  "Update the all of source files. Each source file has its URL in car.
+"
+  
   )
 
 (defun parse-source (fname)
@@ -273,11 +270,9 @@ Search .el file in emacs-settings/sources directory"
                    t ".*\.el"))
 
 (defun get-all-packages ()
-  (let ((source-files (all-source-files)))
-    (let ((packages nil))
-      (dolist (f source-files)
-        (setq packages (append packages (parse-source f))))
-      packages)))
+  "read all of the source files and return a list of package-alist"
+  (let ((source-files (all-source-files))) ;all file name
+    (mapcan #'parse-source source-files)))
 
 (defun find-package-alist-from-source-files (name)
   "find a package alist whose name is `name' from source files"
