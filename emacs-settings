@@ -39,15 +39,6 @@ emacs_settings_setup() {
 EOF
 }
 
-emacs_settings_bootstrap() {
-    if [ ! -e $EMACSLISP_DIR/auto-install.el ] ; then
-        if debug_mode ; then
-            debug_echo now installing aut-install.el
-        fi
-        wget $AUTO_INSTALL_URL -P $EMACSLISP_DIR
-    fi
-}
-
 call_emacs() {
     ARGS="$@"
     "$EMACS" -batch -l "$BASE/emacs-settings.el" \
@@ -73,6 +64,14 @@ emacs_settings_uninstall() {
         debug_echo uninstalling $target_packages
     fi
     call_emacs "(uninstall-package-from-name \"$target_packages\")"
+}
+
+emacs_settings_add() {
+    local target_url="$@"
+    if debug_mode ; then
+        debug_echo add $target_url source file to $SOURCES_DIR
+    fi
+    wget $target_url -P $SOURCES_DIR
 }
 
 main() {
@@ -104,7 +103,7 @@ main() {
             "install" ) emacs_settings_install $ARGS;;
             "uninstall" ) emacs_settings_uninstall $ARGS;;
             "setup" ) emacs_settings_setup $ARGS;;
-            "bootstrap" ) emacs_settings_bootstrap $ARGS;;
+            "add" ) emacs_settings_add $ARGS;;
             "help" ) usage;;
             * ) usage 1>&2
                 exit 1;;
@@ -122,9 +121,9 @@ Supported commands are:
   uninstall PACKEGES... uninstall these packeges
   setup                 echo some bootstrap codes to use the packeges
                         installed by emacs-settings in you emacs.
-  bootstrap             install the emacs lisp packages required
-                        by emacs-settings.
-
+  add SOURCE-URL        add another source file located at SOURCE-URL.
+                        Currently, emacs-settings download the source file
+                        using wget command.
 Supported options are:
   -d                    run in debug mode.
   -e EMACS              emacs-setting calls emacs in batch mode. you can
