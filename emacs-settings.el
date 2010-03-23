@@ -228,7 +228,7 @@ and the directory from emacs.d/"
 (defun install-git (source pkg)
   (destructuring-bind (git git-repo) source
     (let ((%git-repo (symbol->string git-repo)))
-      (git-clong %git-repo pkg))))
+      (git-clone %git-repo pkg))))
 
 (defun %install-package (source pkg)
   (if *emacs-settings-debug-p* (format* "parsing %s\n" source))
