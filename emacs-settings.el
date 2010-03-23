@@ -186,10 +186,9 @@ and the directory from emacs.d/"
       (add-to-installed pkg))))
 
 (defun tar-xvzf (tar-path dir)
-  "call tar -xvzf `tar-path' and expands in `dir'"
+  "call tar -xvzf `tar-path' -C `dir'"
   (format* "now expanding %s to %s...\n" tar-path dir)
-  (call-process "tar" nil t t "xvzf" tar-path "-C" dir)
-  )
+  (call-process "tar" nil t t "xvzf" tar-path "-C" dir))
 
 (defun wget-and-expand-tar-ball (url fname pkg)
   (wget url (package-directory pkg))
@@ -257,12 +256,11 @@ and the directory from emacs.d/"
 (defun update-sources ()
   "Update the all of source files. Each source file has its URL in car.
 "
-  
-  )
+  (error "not supported"))
 
 (defun parse-source (fname)
   "make the package associated lists of a source file `fname'."
-  (with-open-file (str f)
+  (with-open-file (str fname)
     (mapcar #'make-package-alist (cdr (read str)))))
 
 (defun assoc-ref (key list)
