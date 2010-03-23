@@ -1,19 +1,23 @@
 ;; sources.el written by R.Ueda (garaemon)
 ;; the list of emacs packages.
-;; <all> := (<def>...)
-;; <def> := (<package-name> <type> <source-list>
-;;           &optional <documentation> <dependent-packages>
-;;                     <install-commands>)
-;; <type> := library | bootstrap
-;; <source-list> := <source> | (<source> ...)
-;; <source>      := <url> | <cvs-url> | <svn-url> | <git-url> | <local-path>
+;;
+;; <all>          := (<url> <def> <def> ...)
+;; <def>          := (<package-name> <type> <source-list>
+;;                     &optional <documentation> <dependent-packages>
+;;                               <install-commands>)
+;; <package-name> := <symbol>
+;; <type>         := library | bootstrap
+;; <source-list>  := <source> | (<source> <source> ...)
+;; <source>       := <url> | <cvs-url> | <svn-url> | <git-url> | <local-path>
 ;;                        | <tar-ball>
-;; <url> := symbol
-;; <cvs-url> := (cvs <url> module-name)
-;; <svn-url> := (svn <url>)
-;; <local-path> := (local <path>)
-;; <path>       := <string>
-;; <tar-ball>   := (tar-ball <url>)
+;; <url>          := <symbol> | <string>
+;; <cvs-url>      := (cvs <url> <module-name>)
+;; <module-name>  := <symbol> | <string>
+;; <svn-url>      := (svn <url>)
+;; <local-path>   := (local <path>)
+;; <path>         := <url>
+;; <path>         := <string>
+;; <tar-ball>     := (tar-ball <url>)
 (http://github.com/garaemon/emacs-settings/raw/master/sources/list.el
  (navi-2ch library
            (tar-ball http://sourceforge.net/projects/navi2ch/files/navi2ch/navi2ch-1.8.3/navi2ch-1.8.3.tar.gz/download navi2ch-1.8.3.tar.gz)
