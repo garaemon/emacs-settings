@@ -168,7 +168,7 @@ and the directory from emacs.d/"
     (let ((target (find-package name installed)))
       (if target
           (progn
-            (if *emacs-settings-debug-p*
+            (if *emacs-settings-debug-p* 
                 (format* "%s is found %s\n" name target))
             ;; remove the entry from emacs.d/installed
             (remove-from-installed target)
@@ -177,13 +177,15 @@ and the directory from emacs.d/"
         (error "%s is not found" name)))))
 
 (defun install-package (pkg)
+  "install a package `pkg'. First of all, make a directory
+whose name is (name-of pkg), "
   (let ((sources (sources-of pkg))
         (dir (package-directory pkg)))
     (unless (file-exists-p dir)
-      (make-directory dir)
-      (%install-package sources pkg)
+      (make-directory dir)              ;first of all, make directory
+      (%install-package sources pkg)    ;download the source codes
       ;; we need to add to load path
-      (add-to-installed pkg))))
+      (add-to-installed pkg))))         ;add a package to emacs.d/installed
 
 (defun tar-xvzf (tar-path dir)
   "call tar -xvzf `tar-path' -C `dir'"
@@ -204,7 +206,7 @@ and the directory from emacs.d/"
 (defun svn-checkout (svn-path pkg)
   "call svn co `svn-path' `package-directory'"
   (call-process "svn" nil t t "co" svn-path (package-directory pkg)))
-  
+
 (defun git-clone (git-repo pkg)
   "call git clone `git-repo' `package-directory'"
   (call-process "git" nil t t "clone" git-repo (package-directory pkg)))
@@ -263,10 +265,6 @@ and the directory from emacs.d/"
   (with-open-file (str fname)
     (mapcar #'make-package-alist (cdr (read str)))))
 
-(defun assoc-ref (key list)
-  "take a value of `key' in an associated list `list'"
-  (cdr (assoc key list)))
-
 (defun all-source-files ()
   "Return the all of source files.
 Search .el file in emacs-settings/sources directory"
@@ -283,16 +281,24 @@ Search .el file in emacs-settings/sources directory"
   (let ((all-packages (get-all-packages)))
     (find name all-packages :key #'name-of)))
 
+;; utlity
+(defun assoc-ref (key list)
+  "take a value of `key' in an associated list `list'"
+  (cdr (assoc key list)))
+
 (defun symbol->string (sym)
   "convert symbol to string. `string' function in Common Lisp
 is not supported in Emacs Lisp?"
   (format "%s" sym))
 
-(defun enumerate-packages ()
+(defun enumerate-packages (command)
   "called in `packages' commend. print out name and description of packages
 to standard out."
   (if *emacs-settings-debug-p* (format* "enumerating packages...\n"))
-  (let ((packages (get-all-packages)))
+  (let ((packages
+         (cond ((string= command "installed")
+                (installed-package-from-installed-file))
+               (t (get-all-packages)))))
     (dolist (pkg packages)
       (format* "%s\n" (name-of pkg))
       (format* "   %s\n" (documentation-of pkg)))

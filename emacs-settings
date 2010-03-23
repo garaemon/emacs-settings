@@ -64,7 +64,7 @@ emacs_settings_install() {
 }
 
 emacs_settings_packages() {
-    call_emacs "(enumerate-packages)"
+    call_emacs "(enumerate-packages \"$@\")"
 }
 
 emacs_settings_uninstall() {
@@ -100,7 +100,7 @@ main() {
         
         # run command
         case "$COMMAND" in
-            "packages" ) emacs_settings_packages;;
+            "packages" ) emacs_settings_packages $ARGS;;
             "install" ) emacs_settings_install $ARGS;;
             "uninstall" ) emacs_settings_uninstall $ARGS;;
             "setup" ) emacs_settings_setup $ARGS;;
@@ -116,7 +116,7 @@ usage() {
 Usage: $BASE [OPTIONS...] COMMAND [ARGS...]
 
 Supported commands are:
-  packages [installed]  show a list of packeges. If you specify `installed',
+  packages [installed]  show a list of packeges. If you specify installed,
                         only shows the installed packages.
   install PACKEGES...   install these packeges
   uninstall PACKEGES... uninstall these packeges
