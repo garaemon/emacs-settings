@@ -190,30 +190,29 @@ and the directory from emacs.d/"
         (t (eval command))))            ;just eval it!
 
 (defun run-install-shell-comamnd (command pkg)
-  (if (= (call-process "cd" nil t t (package-directory pkg) "&&" command) 0)
-      t
-    (error "error has occurred")))
+  "execute a shell command `command'"
+  (if *emacs-settings-debug-p* (format* "now exec %s\n" command))
+  (let ((default-directory (package-directory pkg)))
+    (if (= (print (call-process command nil t t)) 0)
+        t
+      (error "error has occurred"))))
 
 (defun run-install-keyword-command (command pkg)
   (case command
     (:byte-compile
+     ;; compile the all files which has .el in suffix
      (let ((files (directory-files (package-directory pkg) t ".*\.el")))
-       ;; first of all, load all files
        (dolist (f files)
          (unless (ignore-errors (byte-compile-file f t))
            (format* "Error: compiling %s is failed\n" f)))))
-     ;;(byte-recompile-directory (package-directory pkg)))
     (t (error "%s is not supported" command))))
-  
-(defun update-emacs-settings-site-dir ()
-  (let ((root-directory *emacs-settings-site-dir*))
-    (%update-emacs-settings-site-dir root-directory)))
 
-(defun %update-emacs-settings-site-dir (dir)
+(defun update-emacs-settings-site-dir (dir)
+  "add `dir' and subdirectories of it to load-path"
   (let ((dirs (remove-if-not #'file-directory-p
                              (directory-files dir t "[^\.*]"))))
     (dolist (d dirs)
-      (%update-emacs-settings-site-dir d))
+      (update-emacs-settings-site-dir d))
     (setq load-path (cons dir load-path))))
 
 (defun install-package (pkg)
@@ -224,7 +223,7 @@ whose name is (name-of pkg), "
     (unless (file-exists-p dir)
       (make-directory dir)              ;first of all, make directory
       (%install-package sources pkg)    ;download the source codes
-      (update-emacs-settings-site-dir)
+      (update-emacs-settings-site-dir *emacs-settings-site-dir*)
       (exec-install-commands pkg)
       ;; we need to add to load path
       (add-to-installed pkg))))         ;add a package to emacs.d/installed
@@ -241,7 +240,6 @@ whose name is (name-of pkg), "
 
 (defun cvs-checkout (cvs-root module-name pkg)
   "call cvs -d `cvs-root' co -d `package-directory' `module-name'"
-  ;; NB: 
   (call-process "cvs" nil t t "-d" cvs-root
                 "co" "-d" (package-directory pkg) module-name))
 
@@ -298,8 +296,7 @@ whose name is (name-of pkg), "
    (t (error "not supported source %s" source))))
 
 (defun update-sources ()
-  "Update the all of source files. Each source file has its URL in car.
-"
+  "Update the all of source files. Each source file has its URL in car."
   (error "not supported"))
 
 (defun parse-source (fname)
