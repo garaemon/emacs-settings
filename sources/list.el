@@ -17,7 +17,7 @@
 ;; <local-path>   := (local <path>)
 ;; <path>         := <url>
 ;; <path>         := <string>
-;; <tar-ball>     := (tar-ball <url>)
+;; <tar-ball>     := (tar-ball <url> &optional <tar-ball-file-name>)
 ;; <dependent-packages> := (<package-name>)
 ;; <package-name> := <symbol> | <string>
 ;; <install-commands> := (<install-command> <install-command> ...)
@@ -32,25 +32,20 @@
 (http://github.com/garaemon/emacs-settings/raw/master/sources/list.el
  (navi-2ch library
            (tar-ball http://sourceforge.net/projects/navi2ch/files/navi2ch/navi2ch-1.8.3/navi2ch-1.8.3.tar.gz/download navi2ch-1.8.3.tar.gz)
-           "2ch viewer")
- (navi-2ch-setting bootstrap
-                   nil
-                   "setting for 2ch viewer"
-                   (navi-2ch))
+           "2ch viewer"
+           nil
+           ("cd navi-2ch-1.8.3 && EMACS=$EMACS ./configure --with-lispdir=. && make"))
  (clmemo library
          (tar-ball
-          http://isweb22.infoseek.co.jp/computer/pop-club/emacs/clmemo-1.0rc3.tar.gz
-          clmemo-1.0rc3.tar.gz)
+          http://isweb22.infoseek.co.jp/computer/pop-club/emacs/clmemo-1.0rc3.tar.gz)
          "ChangeLog Memo"
          nil
          (:byte-compile))
  (goby library
-       (tar-ball http://www.mew.org/~kazu/proj/goby/goby-1.0.tar.gz
-                 goby-1.0.tar.gz)
+       (tar-ball http://www.mew.org/~kazu/proj/goby/goby-1.0.tar.gz)
        "Presentation Mode"
        nil
        ("cd goby-1.0; make"))
-       ;;(:byte-compile))
  (slime library
         (cvs :pserver:anonymous:anonymous@common-lisp.net:/project/slime/cvsroot slime)
         "Common Lisp IDE")
@@ -89,40 +84,40 @@
   nil
   "Yet Another Tex Mode")
  (anything library
-  (http://www.emacswiki.org/emacs/download/anything.el
-   http://www.emacswiki.org/emacs/download/anything-config.el
-   http://www.emacswiki.org/emacs/download/anything-match-plugin.el
-   http://www.emacswiki.org/emacs/download/anything-migemo.el
-   http://www.emacswiki.org/emacs/download/anything-complete.el
-   http://www.emacswiki.org/emacs/download/anything-show-completion.el
-   http://www.emacswiki.org/emacs/download/anything-auto-install.el
-   http://www.emacswiki.org/emacs/download/descbinds-anything.el
-   http://www.emacswiki.org/emacs/download/anything-grep.el
-   http://www.emacswiki.org/emacs/download/anything-startup.el)
-  "Integrated inteface to anything"
-  nil
-  (:byte-compile))
+           (http://www.emacswiki.org/emacs/download/anything.el
+            http://www.emacswiki.org/emacs/download/anything-config.el
+            http://www.emacswiki.org/emacs/download/anything-match-plugin.el
+            http://www.emacswiki.org/emacs/download/anything-migemo.el
+            http://www.emacswiki.org/emacs/download/anything-complete.el
+            http://www.emacswiki.org/emacs/download/anything-show-completion.el
+            http://www.emacswiki.org/emacs/download/anything-auto-install.el
+            http://www.emacswiki.org/emacs/download/descbinds-anything.el
+            http://www.emacswiki.org/emacs/download/anything-grep.el
+            http://www.emacswiki.org/emacs/download/anything-startup.el)
+           "Integrated inteface to anything from emacs"
+           (auto-install)
+           (:byte-compile))
  (icicles library
-  (http://www.emacswiki.org/emacs/download/icicles.el
-   http://www.emacswiki.org/emacs/download/icicles-chg.el
-   http://www.emacswiki.org/emacs/download/icicles-cmd1.el
-   http://www.emacswiki.org/emacs/download/icicles-cmd2.el
-   http://www.emacswiki.org/emacs/download/icicles-doc1.el
-   http://www.emacswiki.org/emacs/download/icicles-doc2.el
-   http://www.emacswiki.org/emacs/download/icicles-face.el
-   http://www.emacswiki.org/emacs/download/icicles-fn.el
-   http://www.emacswiki.org/emacs/download/icicles-mac.el
-   http://www.emacswiki.org/emacs/download/icicles-mcmd.el
-   http://www.emacswiki.org/emacs/download/icicles-mode.el
-   http://www.emacswiki.org/emacs/download/icicles-opt.el
-   http://www.emacswiki.org/emacs/download/icicles-var.el
-   http://www.emacswiki.org/emacs/download/lacarte.el
-   http://www.emacswiki.org/emacs/download/icomplete+.el
-   http://www.emacswiki.org/emacs/download/hexrgb.el
-   http://www.emacswiki.org/emacs/download/synonyms.el)
-  ""
-  nil
-  (:byte-compile))
+          (http://www.emacswiki.org/emacs/download/icicles.el
+           http://www.emacswiki.org/emacs/download/icicles-chg.el
+           http://www.emacswiki.org/emacs/download/icicles-cmd1.el
+           http://www.emacswiki.org/emacs/download/icicles-cmd2.el
+           http://www.emacswiki.org/emacs/download/icicles-doc1.el
+           http://www.emacswiki.org/emacs/download/icicles-doc2.el
+           http://www.emacswiki.org/emacs/download/icicles-face.el
+           http://www.emacswiki.org/emacs/download/icicles-fn.el
+           http://www.emacswiki.org/emacs/download/icicles-mac.el
+           http://www.emacswiki.org/emacs/download/icicles-mcmd.el
+           http://www.emacswiki.org/emacs/download/icicles-mode.el
+           http://www.emacswiki.org/emacs/download/icicles-opt.el
+           http://www.emacswiki.org/emacs/download/icicles-var.el
+           http://www.emacswiki.org/emacs/download/lacarte.el
+           http://www.emacswiki.org/emacs/download/icomplete+.el
+           http://www.emacswiki.org/emacs/download/hexrgb.el
+           http://www.emacswiki.org/emacs/download/synonyms.el)
+          "smart complementation library"
+          nil
+          (:byte-compile))
  (ddskk library
         (tar-ball http://openlab.ring.gr.jp/skk/maintrunk/ddskk-14.0.91.tar.gz
                   ddskk-14.0.91.tar.gz)
@@ -134,15 +129,7 @@
             (:byte-compile))
  (dabbrev-ja library
              http://namazu.org/~tsuchiya/elisp/dabbrev-ja.el
-             "dabbrev mode for japanese"
+             "dabbrev mode for japanese characters"
              nil
              (:byte-compile))
- (dabbrev-ja-setting bootstrap
-                     nil
-                     "settings for dabbrev-ja"
-                     (dabbrev-ja))
- (shell-pop-setting bootstrap
-                    nil
-                    "settings for shell-pop written by garaemon"
-                    (shell-pop))
  )
