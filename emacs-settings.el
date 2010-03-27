@@ -87,12 +87,47 @@ other packages it depends on. "
           (if *emacs-settings-debug-p*
               (format* "cannot find package %s\n" pkg)))))))
 
+(defun resolve-package-dependencies (pkg all-packages)
+  "resoleve dependencies of `pkg' and returns the packages need to be installed"
+  (%resolve-package-dependencies nil (list pkg) all-packages))
+
+(defun %resolve-package-dependencies (already-searched targets all-packages)
+  (if (null targets)
+      already-searched
+      (let ((target (car targets)))
+        (let ((dependent-packages (depend-of target)))
+          (let ((new-packages
+                 (mapcan #'(lambda (x)
+                             (if (member x already-searched)
+                                 (progn
+                                   (if *emacs-settings-debug-p*
+                                       (format* "%s already enumerated\n" x))
+                                   nil)
+                                 (progn
+                                   ;; error check, x is in all-package or not
+                                   (unless (find-package x all-packages)
+                                     (error "%s is not in sources file" x))
+                                   (if *emacs-settings-debug-p*
+                                       (format* "%s add to list\n" x))
+                                   (list (find-package x all-packages)))))
+                         dependent-packages)))
+            (%resolve-package-dependencies
+             (append (list target) already-searched)
+             (append (cdr targets) new-packages)
+             all-packages))))))
+
 (defun install-package-with-dependencies (pkg all-packages)
   "this function install pkg and its dependent packages."
   ;; currently does not consider about dependency
-  (let ((resolved-packages (list pkg)))
+  (let ((resolved-packages (resolve-package-dependencies pkg all-packages)))
     (dolist (p resolved-packages)
-      (install-package p))))
+      (install-package p))               ;NB: rename to download
+    (update-emacs-settings-site-dir *emacs-settings-site-dir*)
+    (if *emacs-settings-debug-p*
+        (format* "current load-path -> %s\n" load-path))
+    (dolist (p resolved-packages)
+      (exec-install-commands p))
+    ))
 
 (defun package-directory (pkg)
   "returns the path that pkg is installed"
@@ -192,22 +227,39 @@ and the directory from emacs.d/"
         ((keywordp command) (run-install-keyword-command command pkg))
         (t (eval command))))            ;just eval it!
 
+(defun update-emacs-load-path ()
+  (let ((path (apply #'concatenate 'string (mapcan #'(lambda (x) (list x ":"))
+                                                   load-path))))
+    (setenv "EMACSLOADPATH" (substring path 0 (1- (length path))))
+    ))
+
 (defun run-install-shell-comamnd (command pkg)
   "execute a shell command `command'"
-  (if *emacs-settings-debug-p* (format* "now exec '%s'\n" command))
+  (update-emacs-load-path)
   (let ((default-directory (package-directory pkg)))
-    (let ((%command (replace-regexp-in-string "$EMACS" *emacs-path*
-                                              command)))
+    (let ((%command (replace-regexp-in-string
+                     "$EMACS" *emacs-path* command t))) 
+      (if *emacs-settings-debug-p* (format* "now exec '%s'\n" %command))
       (if (= (shell-command
               (format "cd %s && %s" default-directory %command)) 0)
           t
           (error "error has occurred")))))
 
+(defun search-all-elisp-files (root)
+  (let ((all (directory-files root t "[^\.*]")))
+    (mapcan #'(lambda (x)
+                (cond ((file-directory-p x)
+                       (search-all-elisp-files x))
+                      ((string= (file-name-extension x) "el")
+                       (list x))
+                      (t nil)))
+            all)))
+
 (defun run-install-keyword-command (command pkg)
   (case command
     (:byte-compile
      ;; compile the all files which has .el in suffix
-     (let ((files (directory-files (package-directory pkg) t ".*\.el")))
+     (let ((files (search-all-elisp-files (package-directory pkg))))
        (dolist (f files)
          (unless (ignore-errors (byte-compile-file f t))
            (format* "Error: compiling %s is failed\n" f)))))
@@ -229,10 +281,15 @@ whose name is (name-of pkg), "
     (unless (file-exists-p dir)
       (make-directory dir)              ;first of all, make directory
       (%install-package sources pkg)    ;download the source codes
-      (update-emacs-settings-site-dir *emacs-settings-site-dir*)
-      (exec-install-commands pkg)
+      
+      ;; (exec-install-commands pkg)
       ;; we need to add to load path
       (add-to-installed pkg))))         ;add a package to emacs.d/installed
+
+(defun tar-xvjf (tar-path dir)
+  "call tar -xvjf `tar-path' -C `dir'"
+  (format* "now expanding %s to %s...\n" tar-path dir)
+  (call-process "tar" nil t t "xvjf" tar-path "-C" dir))
 
 (defun tar-xvzf (tar-path dir)
   "call tar -xvzf `tar-path' -C `dir'"
@@ -241,13 +298,22 @@ whose name is (name-of pkg), "
 
 (defun wget-and-expand-tar-ball (url fname pkg)
   (wget url (package-directory pkg))
-  (tar-xvzf (format "%s/%s" (package-directory pkg) fname)
-            (package-directory pkg)))
+  (if (string= (file-name-extension url) "bz2")
+      (tar-xvjf (format "%s/%s" (package-directory pkg) fname)
+                (package-directory pkg))
+      (tar-xvzf (format "%s/%s" (package-directory pkg) fname)
+                (package-directory pkg))))
 
 (defun cvs-checkout (cvs-root module-name pkg)
   "call cvs -d `cvs-root' co -d `package-directory' `module-name'"
+  (if *emacs-settings-debug-p*
+      (format* "cvs -d %s co -d %s %s\n" cvs-root
+               (absolute-path->relative-path (package-directory pkg))
+               module-name))
   (call-process "cvs" nil t t "-d" cvs-root
-                "co" "-d" (package-directory pkg) module-name))
+                "co" "-d"
+                (absolute-path->relative-path (package-directory pkg))
+                module-name))
 
 (defun svn-checkout (svn-path pkg)
   "call svn co `svn-path' `package-directory'"
@@ -336,6 +402,9 @@ Search .el file in emacs-settings/sources directory"
 is not supported in Emacs Lisp?"
   (format "%s" sym))
 
+(defun absolute-path->relative-path (abs-path)
+  (file-relative-name abs-path (expand-file-name default-directory)))
+
 (defun enumerate-packages (command)
   "called in `packages' commend. print out name and description of packages
 to standard out."
@@ -348,3 +417,4 @@ to standard out."
       (format* "%s\n" (name-of pkg))
       (format* "   %s\n" (documentation-of pkg)))
     nil))
+

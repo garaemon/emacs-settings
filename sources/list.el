@@ -41,15 +41,17 @@
           http://isweb22.infoseek.co.jp/computer/pop-club/emacs/clmemo-1.0rc3.tar.gz)
          "ChangeLog Memo"
          nil
-         (:byte-compile))
+         ("cd clmemo-1.0rc3 && EMACS=$EMACS make"))
  (goby library
        (tar-ball http://www.mew.org/~kazu/proj/goby/goby-1.0.tar.gz)
        "Presentation Mode"
        nil
-       ("cd goby-1.0; make"))
+       ("cd goby-1.0; EMACS=$EMACS make"))
  (slime library
         (cvs :pserver:anonymous:anonymous@common-lisp.net:/project/slime/cvsroot slime)
-        "Common Lisp IDE")
+        "Common Lisp IDE"
+        nil
+        (:byte-compile))
  (twittering library
              (git git://github.com/hayamiz/twittering-mode.git)
              "Post to twitter and get your time line"
@@ -61,29 +63,39 @@
       (remember))
  (remember library
            (tar-ball http://download.gna.org/remember-el/remember-2.0.tar.gz)
-           "quickly jotting down things to remember")
+           "quickly jotting down things to remember"
+           nil
+           ("cd remember-2.0 && EMACS=$EMACS make"))
  (muse library
        (tar-ball http://mwolson.org/static/dist/muse-latest.tar.gz)
-       "a publishing environment for Emacs.")
+       "a publishing environment for Emacs."
+       nil
+       ("cd muse-latest && EMACS=$EMACS make"))
  (emacs-wiki library
-             (tar-ball http://www.mwolson.org/static/dist/emacs-wiki-latest.tar.gz)
+             (tar-ball http://mwolson.org/static/dist/emacs-wiki/emacs-wiki-2.72.tar.gz)
              "Implementation of a Wiki by JohnWiegley"
-             (planner))
+             (planner)
+             ("cd emacs-wiki-2.72 && EMACS=$EMACS make"))
  (planner library
           (tar-ball http://download.gna.org/planner-el/planner-3.42.tar.gz)
-          "PersonalInformationManager (PIM) by JohnWiegley")
+          "PersonalInformationManager (PIM) by JohnWiegley"
+          (muse)
+          ("cd planner-3.42 && EMACS=$EMACS make"))
  (yasnippet library
             (tar-ball http://yasnippet.googlecode.com/files/yasnippet-bundle-0.6.1c.el.tgz)
-            "yet another snippet extension for Emacs")
+            "yet another snippet extension for Emacs"
+            nil
+            (:byte-compile))
  (auto-complete library
+                (tar-ball http://cx4a.org/pub/auto-complete/auto-complete-1.2.tar.bz2)
+                "Auto completion with popup menu"
                 nil
-                "")
- (go-lang library
-          nil
-          "Major mode for Go Language")
+                (:byte-compile))
  (yatex library
+        (tar-ball http://www.yatex.org/yatex1.74.tar.gz)
+        "Yet Another Tex Mode"
         nil
-        "Yet Another Tex Mode")
+        (:byte-compile))
  (anything library
            (http://www.emacswiki.org/emacs/download/anything.el
             http://www.emacswiki.org/emacs/download/anything-config.el
@@ -122,7 +134,9 @@
  (ddskk library
         (tar-ball http://openlab.ring.gr.jp/skk/maintrunk/ddskk-14.0.91.tar.gz
                   ddskk-14.0.91.tar.gz)
-        "IME for Japanese. SKK(Super Kanji Kanzen) server and client.")
+        "IME for Japanese. SKK(Super Kanji Kanzen) server and client."
+        nil
+        ("cd ddskk-14.0.91 && EMACS=$EMACS make")) ;failed...
  (shell-pop library
             http://www.emacswiki.org/emacs/download/shell-pop.el
             "popping up shell-mode buffer"
