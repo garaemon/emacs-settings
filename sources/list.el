@@ -147,4 +147,27 @@
              "dabbrev mode for japanese characters"
              nil
              (:byte-compile))
+ (haskell library
+          (tar-ball http://projects.haskell.org/haskellmode-emacs/haskell-mode-2.7.0.tar.gz)
+          "major mode for programming language haskell."
+          nil
+          (:byte-compile))
+ (magit library
+        (git git://gitorious.org/magit/mainline.git)
+        "emacs interface to git"
+        nil
+        (:byte-compile))
+ (mode-info 
+  library
+  (tar-ball http://www.namazu.org/~tsuchiya/elisp/mode-info-0.8.5.tar.gz)
+  "emacs interface to info file. 
+http://www.namazu.org/~tsuchiya/elisp/mode-info.html"
+  nil
+  ("cd mode-info-0.8.5 && ./configure && make"))
+ (auto-install
+  library
+  http://www.emacswiki.org/emacs/download/auto-install.el
+  "Effortlessly download, install, and update Elisp files from the web or from a local buffer"
+  nil
+  (:byte-compile))
  )

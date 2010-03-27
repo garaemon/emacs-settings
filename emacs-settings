@@ -33,6 +33,7 @@ debug_echo() {
 emacs_settings_setup() {
     cat <<EOF
 ;; emacs-settings
+(require 'cl)
 (defun update-emacs-settings-site-dir (dir)
   "add dir and subdirectories of it to load-path"
   (let ((dirs (remove-if-not #'file-directory-p
@@ -41,6 +42,9 @@ emacs_settings_setup() {
       (update-emacs-settings-site-dir d))
     (setq load-path (cons dir load-path))))
 (update-emacs-settings-site-dir "$EMACSLISP_DIR")
+
+(load "$BASE/init.el")
+(load-emacs-settings "$BASE")
 EOF
 }
 
@@ -76,7 +80,7 @@ emacs_settings_add() {
     if debug_mode ; then
         debug_echo add $target_url source file to $SOURCES_DIR
     fi
-    wget $target_url -P $SOURCES_DIR
+    wget $target_url -O $SOURCES_DIR/`basename $target_url`
 }
 
 main() {

@@ -3,7 +3,7 @@
 ;; emacs running on emacs batch mode.
 ;;
 ;; written by R.Ueda (garaemon)
-
+(setq max-lisp-eval-depth 1000)
 (require 'cl)                           ;use common lisp like mode
 
 ;; globals. these globals are changed in `setup' function
@@ -92,6 +92,7 @@ other packages it depends on. "
   (%resolve-package-dependencies nil (list pkg) all-packages))
 
 (defun %resolve-package-dependencies (already-searched targets all-packages)
+  (print (mapcar #'name-of targets))
   (if (null targets)
       already-searched
       (let ((target (car targets)))
@@ -112,7 +113,9 @@ other packages it depends on. "
                                    (list (find-package x all-packages)))))
                          dependent-packages)))
             (%resolve-package-dependencies
-             (append (list target) already-searched)
+             (if (eq (type-of* target) 'virtual)
+                 already-searched
+               (append (list target) already-searched))
              (append (cdr targets) new-packages)
              all-packages))))))
 
@@ -120,8 +123,11 @@ other packages it depends on. "
   "this function install pkg and its dependent packages."
   ;; currently does not consider about dependency
   (let ((resolved-packages (resolve-package-dependencies pkg all-packages)))
+    (if *emacs-settings-debug-p*
+        (format* "resolve dependencies -> %s¥n" resolved-packages))
     (dolist (p resolved-packages)
-      (install-package p))               ;NB: rename to download
+      (unless (eq (type-of* p) 'virtual)
+	(install-package p)))               ;NB: rename to download
     (update-emacs-settings-site-dir *emacs-settings-site-dir*)
     (if *emacs-settings-debug-p*
         (format* "current load-path -> %s\n" load-path))
@@ -258,11 +264,12 @@ and the directory from emacs.d/"
 (defun run-install-keyword-command (command pkg)
   (case command
     (:byte-compile
-     ;; compile the all files which has .el in suffix
-     (let ((files (search-all-elisp-files (package-directory pkg))))
-       (dolist (f files)
-         (unless (ignore-errors (byte-compile-file f t))
-           (format* "Error: compiling %s is failed\n" f)))))
+     (let ((default-directory (package-directory pkg)))
+       ;; compile the all files which has .el in suffix
+       (let ((files (search-all-elisp-files (package-directory pkg))))
+	 (dolist (f files)
+	   (unless (ignore-errors (byte-compile-file f t))
+	     (format* "Error: compiling %s is failed\n" f))))))
     (t (error "%s is not supported" command))))
 
 (defun update-emacs-settings-site-dir (dir)
