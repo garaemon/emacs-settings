@@ -144,4 +144,9 @@ Example:
 EOF
 }
 
+# dirty hack!
+if [ ! -e $EMACSLISP_DIR ] ; then
+    mkdir -p $EMACSLISP_DIR
+fi
+
 main $@
