@@ -47,7 +47,7 @@ EOF
 call_emacs() {
     ARGS="$@"
     "$EMACS" -batch -l "$BASE/emacs-settings.el" \
-        -eval "(setup \"$BASE\" \"${DEBUG_MODE}\")" \
+        -eval "(setup \"$BASE\" \"${DEBUG_MODE}\" \"${EMACS}\")" \
         -eval "$ARGS"
 }
 
@@ -139,5 +139,7 @@ Example:
   $BASE setup >> ~/.emacs
 EOF
 }
+
+
 
 main $@

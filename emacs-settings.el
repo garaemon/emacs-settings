@@ -9,14 +9,17 @@
 ;; globals. these globals are changed in `setup' function
 (defvar *emacs-settings-source-dir* "~/prog/emacs-settings/sources")
 (defvar *emacs-settings-site-dir* "~/prog/emacs-settings/emacs.d")
+(defvar *emacs-path* "/usr/bin/emacs")
 (defvar *emacs-settings-debug-p* nil)
 
-(defun setup (basedir debug-mode)
+
+(defun setup (basedir debug-mode emacs-path)
   "this function is always called by emacs-settings shell script."
   ;; setup
   (setq *emacs-settings-debug-p* (string= debug-mode "true"))
   (setq *emacs-setting-source-dir* (format "%s/sources" basedir))
   (setq *emacs-setting-site-dir* (format "%s/emacs.d" basedir))
+  (setq *emacs-path* emacs-path)
   )
 
 (defmacro* with-open-file ((f fname) &rest bodies)
@@ -191,11 +194,14 @@ and the directory from emacs.d/"
 
 (defun run-install-shell-comamnd (command pkg)
   "execute a shell command `command'"
-  (if *emacs-settings-debug-p* (format* "now exec %s\n" command))
+  (if *emacs-settings-debug-p* (format* "now exec '%s'\n" command))
   (let ((default-directory (package-directory pkg)))
-    (if (= (print (call-process command nil t t)) 0)
-        t
-      (error "error has occurred"))))
+    (let ((%command (replace-regexp-in-string "$EMACS" *emacs-path*
+                                              command)))
+      (if (= (shell-command
+              (format "cd %s && %s" default-directory %command)) 0)
+          t
+          (error "error has occurred")))))
 
 (defun run-install-keyword-command (command pkg)
   (case command

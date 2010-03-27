@@ -29,12 +29,13 @@
 ;; Currently supported keywords are:
 ;;   $EMACS -> path-to-emacs
 ;;   $PACKAGE -> path-to-package
-(http://github.com/garaemon/emacs-settings/raw/master/sources/list.el
- (navi-2ch library
-           (tar-ball http://sourceforge.net/projects/navi2ch/files/navi2ch/navi2ch-1.8.3/navi2ch-1.8.3.tar.gz/download navi2ch-1.8.3.tar.gz)
-           "2ch viewer"
-           nil
-           ("cd navi-2ch-1.8.3 && EMACS=$EMACS ./configure --with-lispdir=. && make"))
+(http://github.com/garaemon/emacs-settings/raw/master/sources/list.el ;URL of this source file
+ (navi-2ch                              ;package name
+  library                               ;type of package
+  (tar-ball http://sourceforge.net/projects/navi2ch/files/navi2ch/navi2ch-1.8.3/navi2ch-1.8.3.tar.gz/download navi2ch-1.8.3.tar.gz) ;source location
+  "2ch viewer"                          ;description
+  nil                                   ;dependency
+  ("cd navi2ch-1.8.3 && EMACS=$EMACS ./configure --with-lispdir=. && make")) ;install command   
  (clmemo library
          (tar-ball
           http://isweb22.infoseek.co.jp/computer/pop-club/emacs/clmemo-1.0rc3.tar.gz)
@@ -55,34 +56,34 @@
              nil
              (:byte-compile))
  (org library
-  nil
-  ""
-  (remember))
+      (tar-ball http://orgmode.org/org-6.34c.tar.gz)
+      "an Emacs Mode for Notes, Project Planning, and Authoring"
+      (remember))
  (remember library
-  nil
-  "")
+           (tar-ball http://download.gna.org/remember-el/remember-2.0.tar.gz)
+           "quickly jotting down things to remember")
  (muse library
-  nil
-  "")
+       (tar-ball http://mwolson.org/static/dist/muse-latest.tar.gz)
+       "a publishing environment for Emacs.")
  (emacs-wiki library
-  nil
-  "wiki system"
-  (planner))
+             (tar-ball http://www.mwolson.org/static/dist/emacs-wiki-latest.tar.gz)
+             "Implementation of a Wiki by JohnWiegley"
+             (planner))
  (planner library
-  nil
-  "")
+          (tar-ball http://download.gna.org/planner-el/planner-3.42.tar.gz)
+          "PersonalInformationManager (PIM) by JohnWiegley")
  (yasnippet library
-  nil
-  "")
+            (tar-ball http://yasnippet.googlecode.com/files/yasnippet-bundle-0.6.1c.el.tgz)
+            "yet another snippet extension for Emacs")
  (auto-complete library
-  nil
-  "")
+                nil
+                "")
  (go-lang library
-  nil
-  "Major mode for Go Language")
+          nil
+          "Major mode for Go Language")
  (yatex library
-  nil
-  "Yet Another Tex Mode")
+        nil
+        "Yet Another Tex Mode")
  (anything library
            (http://www.emacswiki.org/emacs/download/anything.el
             http://www.emacswiki.org/emacs/download/anything-config.el
