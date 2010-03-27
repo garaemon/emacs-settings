@@ -92,7 +92,6 @@ other packages it depends on. "
   (%resolve-package-dependencies nil (list pkg) all-packages))
 
 (defun %resolve-package-dependencies (already-searched targets all-packages)
-  (print (mapcar #'name-of targets))
   (if (null targets)
       already-searched
       (let ((target (car targets)))
