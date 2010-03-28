@@ -170,4 +170,9 @@ http://www.namazu.org/~tsuchiya/elisp/mode-info.html"
   "Effortlessly download, install, and update Elisp files from the web or from a local buffer"
   nil
   (:byte-compile))
+ (usage-memo
+  library
+  http://www.emacswiki.org/cgi-bin/emacs/download/usage-memo.el
+  "Integration of Emacs help system and memo"
+  nil (:byte-compile))
  )
