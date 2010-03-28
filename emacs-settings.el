@@ -404,9 +404,8 @@ Search .el file in emacs-settings/sources directory"
   (cdr (assoc key list)))
 
 (defun symbol->string (sym)
-  "convert symbol to string. `string' function in Common Lisp
-is not supported in Emacs Lisp?"
-  (format "%s" sym))
+  "convert symbol to string."
+  (symbol-name sym))
 
 (defun absolute-path->relative-path (abs-path)
   (file-relative-name abs-path (expand-file-name default-directory)))
