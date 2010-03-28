@@ -113,6 +113,7 @@ main() {
             "uninstall" ) emacs_settings_uninstall $ARGS;;
             "setup" ) emacs_settings_setup $ARGS;;
             "add" ) emacs_settings_add $ARGS;;
+	    "update" ) emacs_settings_update $ARGS;;
             "help" ) usage;;
             * ) usage 1>&2
                 exit 1;;
@@ -133,12 +134,17 @@ Supported commands are:
   add SOURCE-URL        add another source file located at SOURCE-URL.
                         Currently, emacs-settings download the source file
                         using wget command.
+  update                update the source files in `sources' directory.
+                        Sorry, this is not supported now.
+  upgrade               update the installed packages.
+                        Sorry, this is not supported now.
 Supported options are:
   -d                    run in debug mode.
   -e EMACS              emacs-setting calls emacs in batch mode. you can
                         specify emacs use this option.
 
 Example:
+  $BASE packages
   $BASE install anything
   $BASE setup >> ~/.emacs
 EOF
