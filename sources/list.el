@@ -54,7 +54,7 @@
         (:byte-compile))
  (twittering library
              (git git://github.com/hayamiz/twittering-mode.git)
-             "Post to twitter and get your time line"
+             "Twitter Client on Emacs."
              nil
              (:byte-compile))
  (org library
