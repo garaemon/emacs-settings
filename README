@@ -2,10 +2,10 @@ emacs-settings is a command line utility to install emacs packages.
 --------------------------------------------------------------------
 
 Install:
-You can get the latest package by using git.
+You can get the latest sources by using git.
  $ git clone git://github.com/garaemon/emacs-settings.git
-And you need to add path to emacs-settings to PATH.
-In you .basahrc or .zshrc
+And you need to add emacs-settings to PATH.
+In you use .basahrc or .zshrc, add the following line into it:
   export PATH=$PATH:/path-to-emacs-settings
 
 Usage:
