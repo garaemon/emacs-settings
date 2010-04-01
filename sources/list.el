@@ -61,6 +61,10 @@
       (tar-ball http://orgmode.org/org-6.34c.tar.gz)
       "an Emacs Mode for Notes, Project Planning, and Authoring"
       (remember))
+ (org-info-js library
+              (git git://github.com/SebastianRose/org-info-js.git)
+              "implements part of Emacs Org-mode in it's XHTML-exported files, allowing them to be rendered and browsed in a linuxdoc/texinfo style."
+              (org))
  (remember library
            (tar-ball http://download.gna.org/remember-el/remember-2.0.tar.gz)
            "quickly jotting down things to remember"
@@ -175,4 +179,16 @@ http://www.namazu.org/~tsuchiya/elisp/mode-info.html"
   http://www.emacswiki.org/cgi-bin/emacs/download/usage-memo.el
   "Integration of Emacs help system and memo"
   nil (:byte-compile))
+ (wanderlust
+  library
+  (cvs :pserver:anonymous@cvs.m17n.org:/cvs/root wanderlust)
+  "Wanderlust is a mail/news reader supporting IMAP4rev1 for emacsen."
+  nil
+  )
+ (apel
+  library
+  (cvs :pserver:anonymous@cvs.m17n.org:/cvs/root apel)
+  "APEL (A Portable Emacs Library) is a library to support to write portable Emacs Lisp programs."
+  nil
+  ("EMACS=$EMACS make"))
  )

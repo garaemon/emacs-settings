@@ -386,7 +386,7 @@ whose name is (name-of pkg), "
   "Return the all of source files.
 Search .el file in emacs-settings/sources directory"
   (directory-files (expand-file-name  "~/prog/emacs-settings/sources")
-                   t ".*\.el"))
+                   t ".*\.el$"))
 
 (defun get-all-packages ()
   "read all of the source files and return a list of package-alist"
@@ -422,4 +422,5 @@ to standard out."
       (format* "%s\n" (name-of pkg))
       (format* "   %s\n" (documentation-of pkg)))
     nil))
+
 
