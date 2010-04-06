@@ -37,7 +37,7 @@ emacs_settings_setup() {
 (defun update-emacs-settings-site-dir (dir)
   "add dir and subdirectories of it to load-path"
   (let ((dirs (remove-if-not #'file-directory-p
-                             (directory-files dir t "[^\.*]"))))
+                             (directory-files dir t "^[^.]"))))
     (dolist (d dirs)
       (update-emacs-settings-site-dir d))
     (setq load-path (cons dir load-path))))
