@@ -17,8 +17,8 @@
   "this function is always called by emacs-settings shell script."
   ;; setup
   (setq *emacs-settings-debug-p* (string= debug-mode "true"))
-  (setq *emacs-setting-source-dir* (format "%s/sources" basedir))
-  (setq *emacs-setting-site-dir* (format "%s/emacs.d" basedir))
+  (setq *emacs-settings-source-dir* (format "%s/sources" basedir))
+  (setq *emacs-settings-site-dir* (format "%s/emacs.d" basedir))
   (setq *emacs-path* emacs-path)
   )
 
@@ -385,7 +385,7 @@ whose name is (name-of pkg), "
 (defun all-source-files ()
   "Return the all of source files.
 Search .el file in emacs-settings/sources directory"
-  (directory-files (expand-file-name  "~/prog/emacs-settings/sources")
+  (directory-files (expand-file-name  *emacs-settings-source-dir*)
                    t ".*\.el$"))
 
 (defun get-all-packages ()
