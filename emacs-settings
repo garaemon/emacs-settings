@@ -80,7 +80,7 @@ emacs_settings_add() {
     if debug_mode ; then
         debug_echo add $target_url source file to $SOURCES_DIR
     fi
-    wget $target_url -O $SOURCES_DIR/`basename $target_url`
+    wget -N $target_url -O $SOURCES_DIR/`basename $target_url`
 }
 
 main() {

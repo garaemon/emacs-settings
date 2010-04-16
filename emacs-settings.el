@@ -43,7 +43,7 @@
 (defun wget (url dir)
   "download `url' to `dir' using wget command."
   (format* "now downloading %s to %s...\n" url dir)
-  (call-process "wget" nil t t url "-P" dir))
+  (call-process "wget" nil t t "-N" url "-P" dir))
 
 ;; in emacs-settings.el, all the packages are represented
 ;; in associated list.
