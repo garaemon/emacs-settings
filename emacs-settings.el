@@ -46,7 +46,7 @@
 
 (defun wget (url dir)
   "download `url' to `dir' using wget command."
-  (format* "now downloading %s to %s...\n" url dir)
+  (debug-format* "now downloading %s to %s...\n" url dir)
   (call-process "wget" nil t t "-N" url "-P" dir))
 
 ;; in emacs-settings.el, all the packages are represented
@@ -223,6 +223,7 @@ and the directory from emacs.d/"
   "run install commands specified in sources file"
   (let ((installs (install-of pkg)))
     (dolist (install installs)
+      (format* "installing %s\n" (assoc-ref :name pkg))
       (run-install-command install pkg))
     ))
 
@@ -439,23 +440,28 @@ this function search the all URL of source files and wget it with -N option."
     t))
 
 (defun cvs-upgrade-package (package)
-  (debug-format* "currently does not support cvs upgrade, sorry\n"))
+  (debug-format* "currently does not support cvs upgrade, sorry\n")
+  nil)
 
 (defun svn-upgrade-package (package)
-  (debug-format* "currently does not support subversion upgrade, sorry\n"))
+  (debug-format* "currently does not support subversion upgrade, sorry\n")
+  nil)
 
 (defun git-upgrade-package (package)
-  (debug-format* "currently does not support git upgrade, sorry\n"))
+  (debug-format* "currently does not support git upgrade, sorry\n")
+  nil)
 
 (defun tar-ball-upgrade-package (package)
-  (debug-format* "currently does not support tar-ball upgrade, sorry\n"))
+  (debug-format* "currently does not support tar-ball upgrade, sorry\n")
+  nil)
 
 (defun direct-upgrade-package (package)
   (let ((sources (assoc-ref :sources package)))
     (let ((ss (if (listp sources) sources (list sources))))
       (dolist (s ss)
         (wget (if (symbolp s) (symbol->string s) s)
-              (package-directory package))))))
+              (package-directory package)))))
+  t)
 
 (defun upgrade-package (package)
   "upgrade `package'"
@@ -485,7 +491,9 @@ currently only supports .el files."
                    (mapcar #'(lambda (x) (assoc-ref :name x))
                            packages))
     (dolist (p packages)
+      (format* "upgrading %s\n" (assoc-ref :name p))
       (upgrade-package p))
+    (update-emacs-settings-site-dir *emacs-settings-site-dir*)
     (dolist (p packages)
       (exec-install-commands p))
     ))
