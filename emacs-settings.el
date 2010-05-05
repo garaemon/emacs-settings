@@ -32,6 +32,10 @@
   "this function works as common lisp's (format t ...)"
   (format-string-to-stdout (apply #'format str args)))
 
+(defun debug-format* (&rest args)
+  (if *emacs-settings-debug-p*
+      (apply #'format* args)))
+
 (defun format-string-to-stdout (str)
   "print str to standard-output"
   (let ((len (length str)))
@@ -80,12 +84,10 @@ other packages it depends on. "
                      :test #'string=)))
       (if pkg
           (progn
-            (if *emacs-settings-debug-p*
-                (format* "find package %s\n" pkg))
+            (debug-format* "find package %s\n" pkg)
             (install-package-with-dependencies pkg all-packages))
         (progn
-          (if *emacs-settings-debug-p*
-              (format* "cannot find package %s\n" pkg)))))))
+          (debug-format* "cannot find package %s\n" pkg))))))
 
 (defun resolve-package-dependencies (pkg all-packages)
   "resoleve dependencies of `pkg' and returns the packages need to be installed"
@@ -100,15 +102,13 @@ other packages it depends on. "
                  (mapcan #'(lambda (x)
                              (if (member x already-searched)
                                  (progn
-                                   (if *emacs-settings-debug-p*
-                                       (format* "%s already enumerated\n" x))
+                                   (debug-format* "%s already enumerated\n" x)
                                    nil)
                                  (progn
                                    ;; error check, x is in all-package or not
                                    (unless (find-package x all-packages)
                                      (error "%s is not in sources file" x))
-                                   (if *emacs-settings-debug-p*
-                                       (format* "%s add to list\n" x))
+                                   (debug-format* "%s add to list\n" x)
                                    (list (find-package x all-packages)))))
                          dependent-packages)))
             (%resolve-package-dependencies
@@ -266,9 +266,10 @@ and the directory from emacs.d/"
      (let ((default-directory (package-directory pkg)))
        ;; compile the all files which has .el in suffix
        (let ((files (search-all-elisp-files (package-directory pkg))))
-	 (dolist (f files)
-	   (unless (ignore-errors (byte-compile-file f t))
-	     (format* "Error: compiling %s is failed\n" f))))))
+         (dolist (f files)
+           (unless (string= "install.el" (file-name-nondirectory f))
+             (unless (ignore-errors (byte-compile-file f t))
+               (format* "Error: compiling %s is failed\n" f)))))))
     (t (error "%s is not supported" command))))
 
 (defun update-emacs-settings-site-dir (dir)
@@ -287,7 +288,6 @@ whose name is (name-of pkg), "
     (unless (file-exists-p dir)
       (make-directory dir)              ;first of all, make directory
       (%install-package sources pkg)    ;download the source codes
-      
       ;; (exec-install-commands pkg)
       ;; we need to add to load path
       (add-to-installed pkg))))         ;add a package to emacs.d/installed
@@ -435,3 +435,55 @@ this function search the all URL of source files and wget it with -N option."
         (if (not (=  0 (wget url *emacs-settings-source-dir*)))
             (format* "download failed %s\n" f))))
     t))
+
+(defun cvs-upgrade-package (package)
+  (debug-format* "currently does not support cvs upgrade, sorry\n"))
+
+(defun svn-upgrade-package (package)
+  (debug-format* "currently does not support subversion upgrade, sorry\n"))
+
+(defun git-upgrade-package (package)
+  (debug-format* "currently does not support git upgrade, sorry\n"))
+
+(defun tar-ball-upgrade-package (package)
+  (debug-format* "currently does not support tar-ball upgrade, sorry\n"))
+
+(defun direct-upgrade-package (package)
+  (let ((sources (assoc-ref :sources package)))
+    (let ((ss (if (listp sources) sources (list sources))))
+      (dolist (s ss)
+        (wget (if (symbolp s) (symbol->string s) s)
+              (package-directory package))))))
+
+(defun upgrade-package (package)
+  "upgrade `package'"
+  (let ((source (assoc-ref :sources package)))
+    ;; specify type
+    (if (listp source)
+      (cond
+       ((eq 'cvs (car source))
+        (cvs-upgrade-package package))
+       ((eq 'svn (car source))
+        (svn-upgrade-package package))
+       ((eq 'git (car source))
+        (git-upgrade-package package))
+       ((eq 'tar-ball (car source))
+        (tar-ball-upgrade-package package))
+       (t
+        (direct-upgrade-package package)))
+      (direct-upgrade-package package))))
+
+(defun upgrade-emacs.d (&optional package-string)
+  "this function is called in `upgrade' command.
+currently only supports .el files."
+  (let ((packages (if package-string
+                      (error "sorry currently does not support package-string")
+                    (installed-package-from-installed-file))))
+    (debug-format* "upgrading %s\n"
+                   (mapcar #'(lambda (x) (assoc-ref :name x))
+                           packages))
+    (dolist (p packages)
+      (upgrade-package p))
+    (dolist (p packages)
+      (exec-install-commands p))
+    ))

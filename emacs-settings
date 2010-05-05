@@ -50,7 +50,7 @@ EOF
 
 call_emacs() {
     ARGS="$@"
-    "$EMACS" -batch -l "$BASE/emacs-settings.el" \
+    "$EMACS" -q -batch -l "$BASE/emacs-settings.el" \
         -eval "(setup \"$BASE\" \"${DEBUG_MODE}\" \"${EMACS}\")" \
         -eval "$ARGS"
 }
@@ -90,6 +90,18 @@ emacs_settings_update() {
     call_emacs "(update-sources)"
 }
 
+emacs_settings_upgrade() {
+    local args="$@"
+    if debug_mode ; then
+        debug_echo upgrade emacs lisp...
+    fi
+    if [ "$args" == "" ] ; then
+        call_emacs "(upgrade-emacs.d)"
+    else
+        call_emacs "(upgrade-emacs.d \"$args\")"
+    fi
+}
+
 main() {
         # parse options
         while getopts de: OPT
@@ -121,6 +133,7 @@ main() {
             "setup" ) emacs_settings_setup $ARGS;;
             "add" ) emacs_settings_add $ARGS;;
 	    "update" ) emacs_settings_update $ARGS;;
+            "upgrade" ) emacs_settings_upgrade $ARGS;;
             "help" ) usage;;
             * ) usage 1>&2
                 exit 1;;
@@ -142,7 +155,6 @@ Supported commands are:
                         Currently, emacs-settings download the source file
                         using wget command.
   update                update the source files in sources directory.
-                        Sorry, this is not supported now.
   upgrade               update the installed packages.
                         Sorry, this is not supported now.
 Supported options are:
