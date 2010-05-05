@@ -268,6 +268,8 @@ and the directory from emacs.d/"
        (let ((files (search-all-elisp-files (package-directory pkg))))
          (dolist (f files)
            (unless (string= "install.el" (file-name-nondirectory f))
+             ;; install.el in some packages requires input,
+             ;; so we skip it.
              (unless (ignore-errors (byte-compile-file f t))
                (format* "Error: compiling %s is failed\n" f)))))))
     (t (error "%s is not supported" command))))
