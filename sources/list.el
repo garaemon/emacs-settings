@@ -191,9 +191,16 @@ http://www.namazu.org/~tsuchiya/elisp/mode-info.html"
   "APEL (A Portable Emacs Library) is a library to support to write portable Emacs Lisp programs."
   nil
   ("EMACS=$EMACS make"))
+ (python-mode-extension
+  library
+  (tar-ball http://sourceforge.net/projects/page/files/Python%20Mode%20Extrensions/Python-Mode-Extension-1.0/py-mode-ext-1.0.tgz/download py-mode-ext-1.0.tgz)
+  "python mode extensions"
+  nil
+  (:byte-compile))
  (ipython
   library
   http://ipython.scipy.org/dist/ipython.el
   "ipython is yet another python shell. ipython.el adds support ipython to
-python-mode")
+python-mode"
+  (python-mode-extension))
  )

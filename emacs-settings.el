@@ -87,7 +87,7 @@ other packages it depends on. "
             (debug-format* "find package %s\n" pkg)
             (install-package-with-dependencies pkg all-packages))
         (progn
-          (debug-format* "cannot find package %s\n" pkg))))))
+          (error "cannot find package %s\n" name))))))
 
 (defun resolve-package-dependencies (pkg all-packages)
   "resoleve dependencies of `pkg' and returns the packages need to be installed"
@@ -247,7 +247,8 @@ and the directory from emacs.d/"
                      "$EMACS" *emacs-path* command t))) 
       (if *emacs-settings-debug-p* (format* "now exec '%s'\n" %command))
       (if (= (shell-command
-              (format "cd %s && %s" default-directory %command)) 0)
+              (format "cd %s && %s" default-directory %command)
+              nil nil) 0)
           t
           (error "error has occurred")))))
 
@@ -297,12 +298,12 @@ whose name is (name-of pkg), "
 
 (defun tar-xvjf (tar-path dir)
   "call tar -xvjf `tar-path' -C `dir'"
-  (format* "now expanding %s to %s...\n" tar-path dir)
+  (debug-format* "now expanding %s to %s...\n" tar-path dir)
   (call-process "tar" nil t t "xvjf" tar-path "-C" dir))
 
 (defun tar-xvzf (tar-path dir)
   "call tar -xvzf `tar-path' -C `dir'"
-  (format* "now expanding %s to %s...\n" tar-path dir)
+  (debug-format* "now expanding %s to %s...\n" tar-path dir)
   (call-process "tar" nil t t "xvzf" tar-path "-C" dir))
 
 (defun wget-and-expand-tar-ball (url fname pkg)
@@ -433,6 +434,7 @@ this function search the all URL of source files and wget it with -N option."
     (dolist (f source-files)
       ;;convert to string
       (let ((url (format "%s" (car (with-open-file (str f) (read str))))))
+        (format* "updating %s\n" (file-name-nondirectory f))
         (when *emacs-settings-debug-p*
           (format* "updating %s from %s\n" f url))
         (if (not (=  0 (wget url *emacs-settings-source-dir*)))
