@@ -191,4 +191,9 @@ http://www.namazu.org/~tsuchiya/elisp/mode-info.html"
   "APEL (A Portable Emacs Library) is a library to support to write portable Emacs Lisp programs."
   nil
   ("EMACS=$EMACS make"))
+ (ipython
+  library
+  http://ipython.scipy.org/dist/ipython.el
+  "ipython is yet another python shell. ipython.el adds support ipython to
+python-mode")
  )
