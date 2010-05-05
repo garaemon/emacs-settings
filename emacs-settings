@@ -83,6 +83,13 @@ emacs_settings_add() {
     wget -N $target_url -O $SOURCES_DIR/`basename $target_url`
 }
 
+emacs_settings_update() {
+    if debug_mode ; then
+        debug_echo update source files.
+    fi
+    call_emacs "(update-sources)"
+}
+
 main() {
         # parse options
         while getopts de: OPT

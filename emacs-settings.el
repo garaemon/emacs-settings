@@ -423,4 +423,15 @@ to standard out."
       (format* "   %s\n" (documentation-of pkg)))
     nil))
 
-
+(defun update-sources ()
+  "this function is called in `update' command.
+this function search the all URL of source files and wget it with -N option."
+  (let ((source-files (all-source-files)))
+    (dolist (f source-files)
+      ;;convert to string
+      (let ((url (format "%s" (car (with-open-file (str f) (read str))))))
+        (when *emacs-settings-debug-p*
+          (format* "updating %s from %s\n" f url))
+        (if (not (=  0 (wget url *emacs-settings-source-dir*)))
+            (format* "download failed %s\n" f))))
+    t))
