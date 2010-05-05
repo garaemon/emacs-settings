@@ -197,10 +197,24 @@ http://www.namazu.org/~tsuchiya/elisp/mode-info.html"
   "python mode extensions"
   nil
   (:byte-compile))
+ (python-mode
+  library
+  http://launchpadlibrarian.net/21781107/python-mode.el
+  "python-mode.el is a major mode for editing, debugging, and developing Python programs"
+  nil
+  (:byte-compile))
+ (pymacs
+  library
+  (git git://github.com/pinard/Pymacs.git)
+  "Pymacs is a powerful tool which, once started from Emacs, allows both-way communication between Emacs Lisp and Python."
+  nil
+  ("sudo python setup.py install"
+   ;;(:byte-compile)
+   ))
  (ipython
   library
   http://ipython.scipy.org/dist/ipython.el
   "ipython is yet another python shell. ipython.el adds support ipython to
 python-mode"
-  (python-mode-extension))
+  (python-mode))
  )
