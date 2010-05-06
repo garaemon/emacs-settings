@@ -127,7 +127,7 @@ other packages it depends on. "
         (format* "resolve dependencies -> %s¥n" resolved-packages))
     (dolist (p resolved-packages)
       (unless (eq (type-of* p) 'virtual)
-	(install-package p)))               ;NB: rename to download
+        (download-package p)))               ;NB: rename to download
     (update-emacs-settings-site-dir *emacs-settings-site-dir*)
     (if *emacs-settings-debug-p*
         (format* "current load-path -> %s\n" load-path))
@@ -285,14 +285,14 @@ and the directory from emacs.d/"
       (update-emacs-settings-site-dir d))
     (setq load-path (cons dir load-path))))
 
-(defun install-package (pkg)
+(defun download-package (pkg)
   "install a package `pkg'. First of all, make a directory
 whose name is (name-of pkg), "
   (let ((sources (sources-of pkg))
         (dir (package-directory pkg)))
     (unless (file-exists-p dir)
       (make-directory dir)              ;first of all, make directory
-      (%install-package sources pkg)    ;download the source codes
+      (%download-package sources pkg)    ;download the source codes
       ;; (exec-install-commands pkg)
       ;; we need to add to load path
       (add-to-installed pkg))))         ;add a package to emacs.d/installed
@@ -366,7 +366,7 @@ whose name is (name-of pkg), "
     (let ((%git-repo (symbol->string git-repo)))
       (git-clone %git-repo pkg))))
 
-(defun %install-package (source pkg)
+(defun %download-package (source pkg)
   (if *emacs-settings-debug-p* (format* "parsing %s\n" source))
   (cond
    ((or (stringp source) (symbolp source)) ;url, http://.*\.el
@@ -379,7 +379,7 @@ whose name is (name-of pkg), "
       (git (install-git source pkg))
       (t ;; probably list of <source>
        (dolist (s source)
-         (%install-package s pkg)
+         (%download-package s pkg)
          ))))
    (t (error "Error: not supported source %s" source))))
 
