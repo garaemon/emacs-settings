@@ -87,7 +87,7 @@ other packages it depends on. "
             (debug-format* "find package %s\n" pkg)
             (install-package-with-dependencies pkg all-packages))
         (progn
-          (error "cannot find package %s\n" name))))))
+          (error "Error: cannot find package %s\n" name))))))
 
 (defun resolve-package-dependencies (pkg all-packages)
   "resoleve dependencies of `pkg' and returns the packages need to be installed"
@@ -107,7 +107,8 @@ other packages it depends on. "
                                  (progn
                                    ;; error check, x is in all-package or not
                                    (unless (find-package x all-packages)
-                                     (error "%s is not in sources file" x))
+                                     (error "Error: %s is not in sources file"
+                                            x))
                                    (debug-format* "%s add to list\n" x)
                                    (list (find-package x all-packages)))))
                          dependent-packages)))
@@ -217,7 +218,7 @@ and the directory from emacs.d/"
             (remove-from-installed target)
             ;; remove directory from emacs.d/
             (delete-directory-recursive (package-directory target)))
-        (error "%s is not found" name)))))
+        (error "Error: %s is not found" name)))))
 
 (defun exec-install-commands (pkg)
   "run install commands specified in sources file"
@@ -250,7 +251,7 @@ and the directory from emacs.d/"
               (format "cd %s && %s" default-directory %command)
               nil nil) 0)
           t
-          (error "error has occurred")))))
+          (error "Error: error has occurred")))))
 
 (defun search-all-elisp-files (root)
   (let ((all (directory-files root t "[^\.*]")))
@@ -274,7 +275,7 @@ and the directory from emacs.d/"
              ;; so we skip it.
              (unless (ignore-errors (byte-compile-file f t))
                (format* "Error: compiling %s is failed\n" f)))))))
-    (t (error "%s is not supported" command))))
+    (t (error "Error: %s is not supported" command))))
 
 (defun update-emacs-settings-site-dir (dir)
   "add `dir' and subdirectories of it to load-path"
@@ -375,11 +376,11 @@ whose name is (name-of pkg), "
        (dolist (s source)
          (%install-package s pkg)
          ))))
-   (t (error "not supported source %s" source))))
+   (t (error "Error: not supported source %s" source))))
 
 (defun update-sources ()
   "Update the all of source files. Each source file has its URL in car."
-  (error "not supported"))
+  (error "Error: not supported"))
 
 (defun parse-source (fname)
   "make the package associated lists of a source file `fname'."
@@ -434,9 +435,8 @@ this function search the all URL of source files and wget it with -N option."
     (dolist (f source-files)
       ;;convert to string
       (let ((url (format "%s" (car (with-open-file (str f) (read str))))))
-        (format* "updating %s\n" (file-name-nondirectory f))
-        (when *emacs-settings-debug-p*
-          (format* "updating %s from %s\n" f url))
+        (format* "Info: updating %s\n" (file-name-nondirectory f))
+        (debug-format* "updating %s from %s\n" f url)
         (if (not (=  0 (wget url *emacs-settings-source-dir*)))
             (format* "download failed %s\n" f))))
     t))
@@ -487,7 +487,7 @@ this function search the all URL of source files and wget it with -N option."
   "this function is called in `upgrade' command.
 currently only supports .el files."
   (let ((packages (if package-string
-                      (error "sorry currently does not support package-string")
+                      (error "Error: sorry currently does not support package-string")
                     (installed-package-from-installed-file))))
     (debug-format* "upgrading %s\n"
                    (mapcar #'(lambda (x) (assoc-ref :name x))
