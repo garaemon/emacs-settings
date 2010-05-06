@@ -63,7 +63,8 @@
       (remember))
  (org-info-js library
               (git git://github.com/SebastianRose/org-info-js.git)
-              "implements part of Emacs Org-mode in it's XHTML-exported files, allowing them to be rendered and browsed in a linuxdoc/texinfo style."
+              "implements part of Emacs Org-mode in it's XHTML-exported files,\
+ allowing them to be rendered and browsed in a linuxdoc/texinfo style."
               (org))
  (remember library
            (tar-ball http://download.gna.org/remember-el/remember-2.0.tar.gz)
@@ -171,7 +172,8 @@ http://www.namazu.org/~tsuchiya/elisp/mode-info.html"
  (auto-install
   library
   http://www.emacswiki.org/emacs/download/auto-install.el
-  "Effortlessly download, install, and update Elisp files from the web or from a local buffer"
+  "Effortlessly download, install, and update Elisp files \
+from the web or from a local buffer"
   nil
   (:byte-compile))
  (usage-memo
@@ -188,7 +190,8 @@ http://www.namazu.org/~tsuchiya/elisp/mode-info.html"
  (apel
   library
   (cvs :pserver:anonymous@cvs.m17n.org:/cvs/root apel)
-  "APEL (A Portable Emacs Library) is a library to support to write portable Emacs Lisp programs."
+  "APEL (A Portable Emacs Library) is a library to support \
+to write portable Emacs Lisp programs."
   nil
   ("EMACS=$EMACS make"))
  (python-mode-extension
@@ -200,13 +203,15 @@ http://www.namazu.org/~tsuchiya/elisp/mode-info.html"
  (python-mode
   library
   http://launchpadlibrarian.net/21781107/python-mode.el
-  "python-mode.el is a major mode for editing, debugging, and developing Python programs"
+  "python-mode.el is a major mode for editing, debugging, \
+and developing Python programs"
   nil
   (:byte-compile))
  (pymacs
   library
   (git git://github.com/pinard/Pymacs.git)
-  "Pymacs is a powerful tool which, once started from Emacs, allows both-way communication between Emacs Lisp and Python."
+  "Pymacs is a powerful tool which, once started from Emacs, \
+allows both-way communication between Emacs Lisp and Python."
   nil
   ("sudo python setup.py install"
    ;;(:byte-compile)
