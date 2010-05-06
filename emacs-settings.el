@@ -224,7 +224,7 @@ and the directory from emacs.d/"
   "run install commands specified in sources file"
   (let ((installs (install-of pkg)))
     (dolist (install installs)
-      (format* "installing %s\n" (assoc-ref :name pkg))
+      (format* "installing %s\n" (name-of pkg))
       (run-install-command install pkg))
     ))
 
@@ -463,7 +463,7 @@ this function search the all URL of source files and wget it with -N option."
   nil)
 
 (defun direct-upgrade-package (package)
-  (let ((sources (assoc-ref :sources package)))
+  (let ((sources (sources-of package)))
     (let ((ss (if (listp sources) sources (list sources))))
       (dolist (s ss)
         (wget (if (symbolp s) (symbol->string s) s)
@@ -472,7 +472,7 @@ this function search the all URL of source files and wget it with -N option."
 
 (defun upgrade-package (package)
   "upgrade `package'"
-  (let ((source (assoc-ref :sources package)))
+  (let ((source (sources-of package)))
     ;; specify type
     (if (listp source)
       (cond
@@ -495,10 +495,10 @@ currently only supports .el files."
                       (error "Error: sorry currently does not support package-string")
                     (installed-package-from-installed-file))))
     (debug-format* "upgrading %s\n"
-                   (mapcar #'(lambda (x) (assoc-ref :name x))
+                   (mapcar #'(lambda (x) (name-of x))
                            packages))
     (dolist (p packages)
-      (format* "upgrading %s\n" (assoc-ref :name p))
+      (format* "upgrading %s\n" (name-of p))
       (upgrade-package p))
     (update-emacs-settings-site-dir *emacs-settings-site-dir*)
     (dolist (p packages)
