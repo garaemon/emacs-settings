@@ -222,4 +222,10 @@ allows both-way communication between Emacs Lisp and Python."
   "ipython is yet another python shell. ipython.el adds support ipython to
 python-mode"
   (python-mode))
+ (shell-toggle
+  library
+  http://www.linux-france.org/article/appli/emacs/bibliotheque.html/shell-toggle-patched.el
+  "Toggle to and from the *shell* buffer"
+  nil
+  (:byte-compile))
  )
