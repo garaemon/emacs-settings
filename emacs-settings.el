@@ -47,7 +47,7 @@
 (defun wget (url dir)
   "download `url' to `dir' using wget command."
   (debug-format* "now downloading %s to %s...\n" url dir)
-  (call-process "wget" nil t t "-N" url "-P" dir))
+  (call-process* "wget" "-N" url "-P" dir))
 
 ;; in emacs-settings.el, all the packages are represented
 ;; in associated list.
@@ -297,15 +297,20 @@ whose name is (name-of pkg), "
       ;; we need to add to load path
       (add-to-installed pkg))))         ;add a package to emacs.d/installed
 
+(defun call-process* (command &rest args)
+  (let ((result (apply #'call-process command nil t t args)))
+    (if (not (= result 0))
+        (format* "Warn: %s is failed\n" command))))
+
 (defun tar-xvjf (tar-path dir)
   "call tar -xvjf `tar-path' -C `dir'"
   (debug-format* "now expanding %s to %s...\n" tar-path dir)
-  (call-process "tar" nil t t "xvjf" tar-path "-C" dir))
+  (call-process* "tar" "xvjf" tar-path "-C" dir))
 
 (defun tar-xvzf (tar-path dir)
   "call tar -xvzf `tar-path' -C `dir'"
   (debug-format* "now expanding %s to %s...\n" tar-path dir)
-  (call-process "tar" nil t t "xvzf" tar-path "-C" dir))
+  (call-process* "tar" "xvzf" tar-path "-C" dir))
 
 (defun wget-and-expand-tar-ball (url fname pkg)
   (wget url (package-directory pkg))
@@ -321,18 +326,18 @@ whose name is (name-of pkg), "
       (format* "cvs -d %s co -d %s %s\n" cvs-root
                (absolute-path->relative-path (package-directory pkg))
                module-name))
-  (call-process "cvs" nil t t "-d" cvs-root
-                "co" "-d"
-                (absolute-path->relative-path (package-directory pkg))
-                module-name))
+  (call-process* "cvs" "-d" cvs-root
+                 "co" "-d"
+                 (absolute-path->relative-path (package-directory pkg))
+                 module-name))
 
 (defun svn-checkout (svn-path pkg)
   "call svn co `svn-path' `package-directory'"
-  (call-process "svn" nil t t "co" svn-path (package-directory pkg)))
+  (call-process* "svn" "co" svn-path (package-directory pkg)))
 
 (defun git-clone (git-repo pkg)
   "call git clone `git-repo' `package-directory'"
-  (call-process "git" nil t t "clone" git-repo (package-directory pkg)))
+  (call-process* "git" "clone" git-repo (package-directory pkg)))
 
 ;; install-xxx takes source list and package alist
 (defun install-tar-ball (source pkg)
