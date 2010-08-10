@@ -228,4 +228,16 @@ python-mode"
   "Toggle to and from the *shell* buffer"
   nil
   (:byte-compile))
+ (rosemacs
+  Library
+  http://code.ros.org/svn/ros/stacks/ros/tags/cturtle/tools/rosemacs
+  "emacs utilities for ROS(Robot Operating System)"
+  nil
+  (:byte-compile))
+ (jsk-rosemacs
+  Library
+  https://jsk-ros-pkg.svn.sourceforge.net/svnroot/jsk-ros-pkg/trunk/jsk_ros_tools/jsk-rosemacs
+  "emacs utilities for ROS(Robot Operating System) written by R.Ueda(garaemon)."
+  (anything auto-complete)              ;for popup.el
+  (:byte-compile))
  )
