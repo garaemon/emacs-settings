@@ -6,11 +6,16 @@ You can get the latest sources by using git.
  $ git clone git://github.com/garaemon/emacs-settings.git
 And you need to add emacs-settings to PATH.
 In you use .basahrc or .zshrc, add the following line into it:
-  export PATH=$PATH:/path-to-emacs-settings
+  export PATH=$PATH:/path/to/emacs/settings
 
 Usage:
 please use help command.
 $ emacs-settings help
+
+boostrap:
+you need to edit your ~/.emacs for emacs-settings.
+emacs-settings gives an easy way by setup command.
+$ emacs-settings setup >> ~/.emacs
 
 for example, install anything.
 $ emacs-settings install anything
@@ -20,3 +25,4 @@ You can use `add' comamnd to add another source file.
 $ emacs-settings add http://another.emacs.el
 
 Format of the source file:
+UNDER CONSTRUCTION
