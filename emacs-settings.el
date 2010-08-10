@@ -42,7 +42,11 @@
                          *emacs-settings-colorize-default-suffix*)))
             colorized-string))
       org-str)))
-;;(print (colorized-format :blue "Hello World"))
+
+(defun format-status (status str)
+  (format* "[%s] %s\n"
+           (colorized-format :green status)
+           (colorized-format :blue str)))
 
 (defun setup (basedir debug-mode color-support emacs-path)
   "this function is always called by emacs-settings shell script."
@@ -78,9 +82,8 @@
 
 (defun wget (url dir)
   "download `url' to `dir' using wget command."
-  (format* "[%s] %s\n"
-           (colorized-format :green "downloading")
-           (colorized-format :blue "%s" url))
+  (format-status "downloading"
+                 (format "%s" url))
   (debug-format* "now downloading %s to %s...\n" url dir)
   (call-process* "wget" "-N" url "-P" dir))
 
@@ -256,9 +259,8 @@ and the directory from emacs.d/"
   "run install commands specified in sources file"
   (let ((installs (install-of pkg)))
     (dolist (install installs)
-      (format* "[%s] %s\n"
-               (colorized-format :green "installing")
-               (colorized-format :blue "%s" (name-of pkg)))
+      (format-status "installing"
+                     (format "%s" (name-of pkg)))
       (run-install-command install pkg))
     ))
 
@@ -357,9 +359,8 @@ whose name is (name-of pkg), "
 
 (defun cvs-checkout (cvs-root module-name pkg)
   "call cvs -d `cvs-root' co -d `package-directory' `module-name'"
-  (format* "[%s] %s\n"
-           (colorized-format :green "checking out")
-           (colorized-format :blue "%s" cvs-root))
+  (format-status "checking out"
+                 (format "%s" cvs-root))
   (debug-format* "cvs -d %s co -d %s %s\n" cvs-root
                  (absolute-path->relative-path (package-directory pkg))
                  module-name)
@@ -370,16 +371,14 @@ whose name is (name-of pkg), "
 
 (defun svn-checkout (svn-path pkg)
   "call svn co `svn-path' `package-directory'"
-  (format* "[%s] %s\n"
-           (colorized-format :green "checking out")
-           (colorized-format :blue "%s" svn-path))
+  (format-status "checking-out"
+                 (format "%s" svn-path))
   (call-process* "svn" "co" svn-path (package-directory pkg)))
 
 (defun git-clone (git-repo pkg)
   "call git clone `git-repo' `package-directory'"
-  (format* "[%s] %s\n"
-           (colorized-format :green "checking out")
-           (colorized-format :blue "%s" git-repo))
+  (format-status "checking-out"
+                 (format "%s" git-repo))
   (call-process* "git" "clone" git-repo (package-directory pkg)))
 
 ;; install-xxx takes source list and package alist
@@ -483,31 +482,35 @@ this function search the all URL of source files and wget it with -N option."
     (dolist (f source-files)
       ;;convert to string
       (let ((url (format "%s" (car (with-open-file (str f) (read str))))))
-        (format* "[%s] %s\n"
-                 (colorized-format :green "updating")
-                 (colorized-format :blue "%s" (file-name-nondirectory f)))
+        (format-status "updating"
+                       (format "%s" (file-name-nondirectory f)))
         (debug-format* "updating %s from %s\n" f url)
         (if (not (=  0 (wget url *emacs-settings-source-dir*)))
             (format* "download failed %s\n" f))))
     t))
 
 (defun cvs-upgrade-package (package)
-  (format*
-   (colorized-format :red
-                     "currently does not support cvs upgrade, sorry\n"))
-  nil)
+  (format-status "upgrading"
+                 (format "%s" (package-directory package)))
+  (shell-command-to-string
+   (format "cd %s && cvs up" (package-directory package))))
+  
 
 (defun svn-upgrade-package (package)
-  (format*
-   (colorized-format :red
-                     "currently does not support subversion upgrade, sorry\n"))
-  nil)
+  (format-status "upgrading"
+                 (format "%s" (package-directory package)))
+  (shell-command-to-string
+   (format "cd %s && svn up" (package-directory package))))
 
 (defun git-upgrade-package (package)
-  (format*
-   (colorized-format :red
-                     "currently does not support git upgrade, sorry\n"))
-  nil)
+  ;;(format*
+  ;; (colorized-format :red
+  ;;                   "currently does not support git upgrade, sorry\n"))
+  ;;nil)
+  (format-status "upgrading"
+                 (format "%s" (package-directory package)))
+  (shell-command-to-string
+   (format "cd %s && git pull" (package-directory package))))
 
 (defun tar-ball-upgrade-package (package)
   (format*
@@ -547,15 +550,13 @@ currently only supports .el files."
   (let ((packages (if package-string
                       (error "Error: sorry currently does not support package-string")
                     (installed-package-from-installed-file))))
-    (format* "[%s] %s\n"
-             (colorized-format :green "upgrading")
-             (colorized-format :light-blue "%s"
+    (format-status "upgrading-packages"
+                   (colorized-format :light-blue "%s"
                                (mapcar #'(lambda (x) (name-of x))
                                        packages)))
     (dolist (p packages)
-      (format* "[%s] %s\n"
-               (colorized-format :green "upgrading")
-               (colorized-format :blue "%s" (name-of p)))
+      (format-status "upgrading-package"
+       (format "%s" (name-of p)))
       (upgrade-package p))
     (update-emacs-settings-site-dir *emacs-settings-site-dir*)
     (dolist (p packages)
