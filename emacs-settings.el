@@ -11,6 +11,7 @@
 (defvar *emacs-settings-site-dir* "~/prog/emacs-settings/emacs.d")
 (defvar *emacs-path* "/usr/bin/emacs")
 (defvar *emacs-settings-debug-p* nil)
+(defvar *emacs-settings-color-support-p* t)
 
 ;; utility functions for pretty colorized formatting
 (defvar *emacs-settings-colorize-prefix* "\033[1;")
@@ -23,28 +24,31 @@
 
 (defun colorized-format (color str &rest args)
   (let ((org-str (apply #'format str args)))
-    (let ((colorize-string
-           (case color
-             (:red *emacs-settings-colorize-red-suffix*)
-             (:green *emacs-settings-colorize-green-suffix*)
-             (:blue *emacs-settings-colorize-blue-suffix*)
-             (:yellow *emacs-settings-colorize-yellow-suffix*)
-             (:light-blue *emacs-settings-colorize-light-blue-suffix*)
-             (t (error "unkown color %s" color)))))
-      (let ((colorized-string
-             (format "%s%s%s%s%s"
-                     *emacs-settings-colorize-prefix*
-                     colorize-string
-                     org-str
-                     *emacs-settings-colorize-prefix*
-                     *emacs-settings-colorize-default-suffix*)))
-        colorized-string))))
+    (if *emacs-settings-color-support-p*
+        (let ((colorize-string
+               (case color
+                 (:red *emacs-settings-colorize-red-suffix*)
+                 (:green *emacs-settings-colorize-green-suffix*)
+                 (:blue *emacs-settings-colorize-blue-suffix*)
+                 (:yellow *emacs-settings-colorize-yellow-suffix*)
+                 (:light-blue *emacs-settings-colorize-light-blue-suffix*)
+                 (t (error "unkown color %s" color)))))
+          (let ((colorized-string
+                 (format "%s%s%s%s%s"
+                         *emacs-settings-colorize-prefix*
+                         colorize-string
+                         org-str
+                         *emacs-settings-colorize-prefix*
+                         *emacs-settings-colorize-default-suffix*)))
+            colorized-string))
+      org-str)))
 ;;(print (colorized-format :blue "Hello World"))
 
-(defun setup (basedir debug-mode emacs-path)
+(defun setup (basedir debug-mode color-support emacs-path)
   "this function is always called by emacs-settings shell script."
   ;; setup
   (setq *emacs-settings-debug-p* (string= debug-mode "true"))
+  (setq *emacs-settings-color-support-p* (string= color-support "true"))
   (setq *emacs-settings-source-dir* (format "%s/sources" basedir))
   (setq *emacs-settings-site-dir* (format "%s/emacs.d" basedir))
   (setq *emacs-path* emacs-path)
@@ -74,6 +78,9 @@
 
 (defun wget (url dir)
   "download `url' to `dir' using wget command."
+  (format* "[%s] %s\n"
+           (colorized-format :green "downloading")
+           (colorized-format :blue "%s" url))
   (debug-format* "now downloading %s to %s...\n" url dir)
   (call-process* "wget" "-N" url "-P" dir))
 
@@ -249,7 +256,9 @@ and the directory from emacs.d/"
   "run install commands specified in sources file"
   (let ((installs (install-of pkg)))
     (dolist (install installs)
-      (format* "installing %s\n" (colorized-format :red "%s" (name-of pkg)))
+      (format* "[%s] %s\n"
+               (colorized-format :green "installing")
+               (colorized-format :blue "%s" (name-of pkg)))
       (run-install-command install pkg))
     ))
 
@@ -325,7 +334,8 @@ whose name is (name-of pkg), "
 (defun call-process* (command &rest args)
   (let ((result (apply #'call-process command nil t t args)))
     (if (not (= result 0))
-        (format* "Warn: %s is failed\n" command))))
+        (format* "%s"
+                 (colorized-format :red "[Warn] %s is failed\n" command)))))
 
 (defun tar-xvjf (tar-path dir)
   "call tar -xvjf `tar-path' -C `dir'"
@@ -347,6 +357,9 @@ whose name is (name-of pkg), "
 
 (defun cvs-checkout (cvs-root module-name pkg)
   "call cvs -d `cvs-root' co -d `package-directory' `module-name'"
+  (format* "[%s] %s\n"
+           (colorized-format :green "checking out")
+           (colorized-format :blue "%s" cvs-root))
   (debug-format* "cvs -d %s co -d %s %s\n" cvs-root
                  (absolute-path->relative-path (package-directory pkg))
                  module-name)
@@ -357,10 +370,16 @@ whose name is (name-of pkg), "
 
 (defun svn-checkout (svn-path pkg)
   "call svn co `svn-path' `package-directory'"
+  (format* "[%s] %s\n"
+           (colorized-format :green "checking out")
+           (colorized-format :blue "%s" svn-path))
   (call-process* "svn" "co" svn-path (package-directory pkg)))
 
 (defun git-clone (git-repo pkg)
   "call git clone `git-repo' `package-directory'"
+  (format* "[%s] %s\n"
+           (colorized-format :green "checking out")
+           (colorized-format :blue "%s" git-repo))
   (call-process* "git" "clone" git-repo (package-directory pkg)))
 
 ;; install-xxx takes source list and package alist
@@ -464,26 +483,36 @@ this function search the all URL of source files and wget it with -N option."
     (dolist (f source-files)
       ;;convert to string
       (let ((url (format "%s" (car (with-open-file (str f) (read str))))))
-        (format* "Info: updating %s\n" (file-name-nondirectory f))
+        (format* "[%s] %s\n"
+                 (colorized-format :green "updating")
+                 (colorized-format :blue "%s" (file-name-nondirectory f)))
         (debug-format* "updating %s from %s\n" f url)
         (if (not (=  0 (wget url *emacs-settings-source-dir*)))
             (format* "download failed %s\n" f))))
     t))
 
 (defun cvs-upgrade-package (package)
-  (debug-format* "currently does not support cvs upgrade, sorry\n")
+  (format*
+   (colorized-format :red
+                     "currently does not support cvs upgrade, sorry\n"))
   nil)
 
 (defun svn-upgrade-package (package)
-  (debug-format* "currently does not support subversion upgrade, sorry\n")
+  (format*
+   (colorized-format :red
+                     "currently does not support subversion upgrade, sorry\n"))
   nil)
 
 (defun git-upgrade-package (package)
-  (debug-format* "currently does not support git upgrade, sorry\n")
+  (format*
+   (colorized-format :red
+                     "currently does not support git upgrade, sorry\n"))
   nil)
 
 (defun tar-ball-upgrade-package (package)
-  (debug-format* "currently does not support tar-ball upgrade, sorry\n")
+  (format*
+   (colorized-format :red
+                     "currently does not support tar-ball upgrade, sorry\n"))
   nil)
 
 (defun direct-upgrade-package (package)
@@ -518,11 +547,15 @@ currently only supports .el files."
   (let ((packages (if package-string
                       (error "Error: sorry currently does not support package-string")
                     (installed-package-from-installed-file))))
-    (debug-format* "upgrading %s\n"
-                   (mapcar #'(lambda (x) (name-of x))
-                           packages))
+    (format* "[%s] %s\n"
+             (colorized-format :green "upgrading")
+             (colorized-format :light-blue "%s"
+                               (mapcar #'(lambda (x) (name-of x))
+                                       packages)))
     (dolist (p packages)
-      (format* "upgrading %s\n" (name-of p))
+      (format* "[%s] %s\n"
+               (colorized-format :green "upgrading")
+               (colorized-format :blue "%s" (name-of p)))
       (upgrade-package p))
     (update-emacs-settings-site-dir *emacs-settings-site-dir*)
     (dolist (p packages)

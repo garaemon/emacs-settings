@@ -50,8 +50,13 @@ EOF
 
 call_emacs() {
     ARGS="$@"
+    # here we check your terminal supports color...
+    local color_support="false"
+    if [ -x /usr/bin/dircolors ]; then
+        color_support="true"
+    fi
     "$EMACS" -q -batch -l "$BASE/emacs-settings.el" \
-        -eval "(setup \"$BASE\" \"${DEBUG_MODE}\" \"${EMACS}\")" \
+        -eval "(setup \"$BASE\" \"${DEBUG_MODE}\" \"${color_support}\"\"${EMACS}\")" \
         -eval "$ARGS"
 }
 
