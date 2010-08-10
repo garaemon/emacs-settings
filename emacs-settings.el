@@ -12,6 +12,34 @@
 (defvar *emacs-path* "/usr/bin/emacs")
 (defvar *emacs-settings-debug-p* nil)
 
+;; utility functions for pretty colorized formatting
+(defvar *emacs-settings-colorize-prefix* "\033[1;")
+(defvar *emacs-settings-colorize-default-suffix* "0m")
+(defvar *emacs-settings-colorize-light-blue-suffix* "36m")
+(defvar *emacs-settings-colorize-blue-suffix* "34m")
+(defvar *emacs-settings-colorize-yellow-suffix* "33m")
+(defvar *emacs-settings-colorize-green-suffix* "32m")
+(defvar *emacs-settings-colorize-red-suffix* "31m")
+
+(defun colorized-format (color str &rest args)
+  (let ((org-str (apply #'format str args)))
+    (let ((colorize-string
+           (case color
+             (:red *emacs-settings-colorize-red-suffix*)
+             (:green *emacs-settings-colorize-green-suffix*)
+             (:blue *emacs-settings-colorize-blue-suffix*)
+             (:yellow *emacs-settings-colorize-yellow-suffix*)
+             (:light-blue *emacs-settings-colorize-light-blue-suffix*)
+             (t (error "unkown color %s" color)))))
+      (let ((colorized-string
+             (format "%s%s%s%s%s"
+                     *emacs-settings-colorize-prefix*
+                     colorize-string
+                     org-str
+                     *emacs-settings-colorize-prefix*
+                     *emacs-settings-colorize-default-suffix*)))
+        colorized-string))))
+;;(print (colorized-format :blue "Hello World"))
 
 (defun setup (basedir debug-mode emacs-path)
   "this function is always called by emacs-settings shell script."
@@ -123,14 +151,12 @@ other packages it depends on. "
   "this function install pkg and its dependent packages."
   ;; currently does not consider about dependency
   (let ((resolved-packages (resolve-package-dependencies pkg all-packages)))
-    (if *emacs-settings-debug-p*
-        (format* "resolve dependencies -> %s¥n" resolved-packages))
+    (debug-format* "resolve dependencies -> %s¥n" resolved-packages)
     (dolist (p resolved-packages)
       (unless (eq (type-of* p) 'virtual)
         (download-package p)))               ;NB: rename to download
     (update-emacs-settings-site-dir *emacs-settings-site-dir*)
-    (if *emacs-settings-debug-p*
-        (format* "current load-path -> %s\n" load-path))
+    (debug-format* "current load-path -> %s\n" load-path)
     (dolist (p resolved-packages)
       (exec-install-commands p))
     ))
@@ -180,17 +206,17 @@ emacs.d/installed"
 
 (defun delete-directory-recursive (dir)
   "this function works like `rm -rf dir'"
-  (if *emacs-settings-debug-p* (format* "delete redursive %s \n" dir))
+  (debug-format* "delete redursive %s \n" dir)
   (let ((files (directory-files dir t "[^\.*]")))
     (dolist (f files)
       (if (file-directory-p f)
           (progn
             ;; if f is a directory, call delete-directory-recursive recursively
-            (if *emacs-settings-debug-p* (format* "%s is a directory\n" f))
+            (debug-format* "%s is a directory\n" f)
             (delete-directory-recursive f))
         (progn
           ;; if f is not a directory, call delete-file to remove f
-          (if *emacs-settings-debug-p* (format* "%s is a file\n" f))
+          (debug-format* "%s is a file\n" f)
           (delete-file f))))
     (delete-directory dir)
     files))
@@ -212,8 +238,7 @@ and the directory from emacs.d/"
     (let ((target (find-package name installed)))
       (if target
           (progn
-            (if *emacs-settings-debug-p* 
-                (format* "%s is found %s\n" name target))
+            (debug-format* "%s is found %s\n" name target)
             ;; remove the entry from emacs.d/installed
             (remove-from-installed target)
             ;; remove directory from emacs.d/
@@ -224,7 +249,7 @@ and the directory from emacs.d/"
   "run install commands specified in sources file"
   (let ((installs (install-of pkg)))
     (dolist (install installs)
-      (format* "installing %s\n" (name-of pkg))
+      (format* "installing %s\n" (colorized-format :red "%s" (name-of pkg)))
       (run-install-command install pkg))
     ))
 
@@ -246,7 +271,7 @@ and the directory from emacs.d/"
   (let ((default-directory (package-directory pkg)))
     (let ((%command (replace-regexp-in-string
                      "$EMACS" *emacs-path* command t))) 
-      (if *emacs-settings-debug-p* (format* "now exec '%s'\n" %command))
+      (debug-format* "now exec '%s'\n" %command)
       (if (= (shell-command
               (format "cd %s && %s" default-directory %command)
               nil nil) 0)
@@ -322,10 +347,9 @@ whose name is (name-of pkg), "
 
 (defun cvs-checkout (cvs-root module-name pkg)
   "call cvs -d `cvs-root' co -d `package-directory' `module-name'"
-  (if *emacs-settings-debug-p*
-      (format* "cvs -d %s co -d %s %s\n" cvs-root
-               (absolute-path->relative-path (package-directory pkg))
-               module-name))
+  (debug-format* "cvs -d %s co -d %s %s\n" cvs-root
+                 (absolute-path->relative-path (package-directory pkg))
+                 module-name)
   (call-process* "cvs" "-d" cvs-root
                  "co" "-d"
                  (absolute-path->relative-path (package-directory pkg))
@@ -367,7 +391,7 @@ whose name is (name-of pkg), "
       (git-clone %git-repo pkg))))
 
 (defun %download-package (source pkg)
-  (if *emacs-settings-debug-p* (format* "parsing %s\n" source))
+  (debug-format* "parsing %s\n" source)
   (cond
    ((or (stringp source) (symbolp source)) ;url, http://.*\.el
     (wget (symbol->string source) (package-directory pkg)))
@@ -423,7 +447,7 @@ Search .el file in emacs-settings/sources directory"
 (defun enumerate-packages (command)
   "called in `packages' commend. print out name and description of packages
 to standard out."
-  (if *emacs-settings-debug-p* (format* "enumerating packages...\n"))
+  (debug-format* "enumerating packages...\n")
   (let ((packages
          (cond ((string= command "installed")
                 (installed-package-from-installed-file))
