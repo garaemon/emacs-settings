@@ -12,6 +12,9 @@ Usage:
 please use help command.
 $ emacs-settings help
 
+for example, install anything.
+$ emacs-settings install anything
+
 How to add another source file?
 You can use `add' comamnd to add another source file.
 $ emacs-settings add http://another.emacs.el
