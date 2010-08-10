@@ -161,6 +161,10 @@ other packages it depends on. "
   "this function install pkg and its dependent packages."
   ;; currently does not consider about dependency
   (let ((resolved-packages (resolve-package-dependencies pkg all-packages)))
+    (format-status
+     "dependent packages"
+     (colorized-format :light-blue "%s"
+                       (mapcar #'name-of resolved-packages)))
     (debug-format* "resolve dependencies -> %s¥n" resolved-packages)
     (dolist (p resolved-packages)
       (unless (eq (type-of* p) 'virtual)
