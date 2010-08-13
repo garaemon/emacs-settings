@@ -429,10 +429,6 @@ whose name is (name-of pkg), "
          ))))
    (t (error "Error: not supported source %s" source))))
 
-(defun update-sources ()
-  "Update the all of source files. Each source file has its URL in car."
-  (error "Error: not supported"))
-
 (defun parse-source (fname)
   "make the package associated lists of a source file `fname'."
   (with-open-file (str fname)
@@ -489,8 +485,7 @@ this function search the all URL of source files and wget it with -N option."
         (format-status "updating"
                        (format "%s" (file-name-nondirectory f)))
         (debug-format* "updating %s from %s\n" f url)
-        (if (not (=  0 (wget url *emacs-settings-source-dir*)))
-            (format* "download failed %s\n" f))))
+	(wget url *emacs-settings-source-dir*)))
     t))
 
 (defun cvs-upgrade-package (package)
