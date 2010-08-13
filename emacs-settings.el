@@ -82,8 +82,7 @@
 
 (defun wget (url dir)
   "download `url' to `dir' using wget command."
-  (format-status "downloading"
-                 (format "%s" url))
+  (format-status "downloading" (format "%s" url))
   (debug-format* "now downloading %s to %s...\n" url dir)
   (call-process* "wget" "-N" url "-P" dir))
 
@@ -95,9 +94,9 @@ associated list from the element list. If you want to access
 the associated list, use package-accessors defined by `defpackage-accessor'."
   (destructuring-bind (name type sources &optional doc depend install)
       list
-    (list (cons :name name)
+    (list (cons :name (string->symbol name))
           (cons :type type)
-          (cons :sources sources)
+          (cons :sources (string->symbol sources))
           (cons :documentation doc)
           (cons :depend depend)
           (cons :install install))))
@@ -561,3 +560,10 @@ currently only supports .el files."
     (dolist (p packages)
       (exec-install-commands p))
     ))
+
+(defun string->symbol (arg)
+  (if (atom arg)
+      (if (symbolp arg)
+	  arg
+	(intern arg))
+    (mapcar #'string->symbol arg)))

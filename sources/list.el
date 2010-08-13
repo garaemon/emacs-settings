@@ -194,12 +194,13 @@ from the web or from a local buffer"
 to write portable Emacs Lisp programs."
   nil
   ("EMACS=$EMACS make"))
- (python-mode-extension
-  library
-  (tar-ball http://sourceforge.net/projects/page/files/Python%20Mode%20Extrensions/Python-Mode-Extension-1.0/py-mode-ext-1.0.tgz/download py-mode-ext-1.0.tgz)
-  "python mode extensions"
-  nil
-  (:byte-compile))
+;; sorry url contains space does not supported
+;; (python-mode-extension
+;;  library
+;;  (tar-ball "http://sourceforge.net/projects/page/files/Python Mode Extrensions/Python-Mode-Extension-1.0/py-mode-ext-1.0.tgz/download py-mode-ext-1.0.tgz")
+;;  "python mode extensions"
+;;  nil
+;;  (:byte-compile))
  (python-mode
   library
   http://launchpadlibrarian.net/21781107/python-mode.el
