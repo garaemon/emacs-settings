@@ -241,4 +241,10 @@ python-mode"
   "emacs utilities for ROS(Robot Operating System) written by R.Ueda(garaemon)."
   (anything auto-complete)              ;for popup.el
   (:byte-compile))
+ (bm-el
+  Library
+  http://download.savannah.gnu.org/releases/bm/bm-1.50.el
+  "visible, buffer local, bookmarks"
+  nil
+  (:byte-compile))
  )
