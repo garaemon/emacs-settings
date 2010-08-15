@@ -243,7 +243,7 @@ python-mode"
   (:byte-compile))
  (bm
   library
-  (cvs http://cvs.savannah.gnu.org/viewvc/bm/bm bm)
+  (cvs :pserver:anonymous@cvs.sv.gnu.org:/sources/bm bm)
   "visible, buffer local, bookmarks"
   nil
   (:byte-compile))
