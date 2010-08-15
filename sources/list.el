@@ -236,7 +236,7 @@ python-mode"
   nil
   (:byte-compile))
  (jsk-rosemacs
-  Library
+  library
   (svn https://jsk-ros-pkg.svn.sourceforge.net/svnroot/jsk-ros-pkg/trunk/jsk_ros_tools/jsk-rosemacs)
   "emacs utilities for ROS(Robot Operating System) written by R.Ueda(garaemon)."
   (anything auto-complete)              ;for popup.el
@@ -245,6 +245,13 @@ python-mode"
   library
   (cvs :pserver:anonymous@cvs.sv.gnu.org:/sources/bm bm)
   "visible, buffer local, bookmarks"
+  nil
+  (:byte-compile))
+ (svn-clients
+  library
+  (svn
+   http://svn.apache.org/repos/asf/subversion/trunk/contrib/client-side/emacs)
+  "vc-svn, dsvn and psvn for svn client on emacs"
   nil
   (:byte-compile))
  )
