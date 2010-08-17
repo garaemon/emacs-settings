@@ -254,4 +254,10 @@ python-mode"
   "vc-svn, dsvn and psvn for svn client on emacs"
   nil
   (:byte-compile))
+ (yaml-mode
+  library
+  (git http://github.com/yoshiki/yaml-mode.git)
+  "simple major mode ro edit YAML file for emacs"
+  nil
+  (:byte-compile))
  )
