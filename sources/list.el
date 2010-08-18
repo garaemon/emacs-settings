@@ -60,7 +60,8 @@
  (org library
       (tar-ball http://orgmode.org/org-7.01h.tar.gz)
       "an Emacs Mode for Notes, Project Planning, and Authoring"
-      (remember))
+      (remember)
+      (:byte-compile))
  (org-info-js library
               (git git://github.com/SebastianRose/org-info-js.git)
               "implements part of Emacs Org-mode in it's XHTML-exported files,\
