@@ -58,7 +58,7 @@
              nil
              (:byte-compile))
  (org library
-      (tar-ball http://orgmode.org/org-6.34c.tar.gz)
+      (tar-ball http://orgmode.org/org-7.01h.tar.gz)
       "an Emacs Mode for Notes, Project Planning, and Authoring"
       (remember))
  (org-info-js library
