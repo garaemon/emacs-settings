@@ -210,13 +210,6 @@ to write portable Emacs Lisp programs."
 and developing Python programs"
   nil
   (:byte-compile))
- (pymacs
-  library
-  (git git://github.com/pinard/Pymacs.git)
-  "Pymacs is a powerful tool which, once started from Emacs, \
-allows both-way communication between Emacs Lisp and Python."
-  nil
-  ("python setup.py install"))
  (ipython
   library
   http://ipython.scipy.org/dist/ipython.el
