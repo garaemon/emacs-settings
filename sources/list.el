@@ -216,9 +216,7 @@ and developing Python programs"
   "Pymacs is a powerful tool which, once started from Emacs, \
 allows both-way communication between Emacs Lisp and Python."
   nil
-  ("sudo python setup.py install"
-   ;;(:byte-compile)
-   ))
+  ("python setup.py install"))
  (ipython
   library
   http://ipython.scipy.org/dist/ipython.el
