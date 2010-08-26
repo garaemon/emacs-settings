@@ -58,9 +58,10 @@
              nil
              (:byte-compile))
  (org library
-      (tar-ball http://orgmode.org/org-6.34c.tar.gz)
+      (tar-ball http://orgmode.org/org-7.01h.tar.gz)
       "an Emacs Mode for Notes, Project Planning, and Authoring"
-      (remember))
+      (remember)
+      (:byte-compile))
  (org-info-js library
               (git git://github.com/SebastianRose/org-info-js.git)
               "implements part of Emacs Org-mode in it's XHTML-exported files,\
@@ -72,10 +73,11 @@
            nil
            ("cd remember-2.0 && EMACS=$EMACS make"))
  (muse library
-       (tar-ball http://mwolson.org/static/dist/muse-latest.tar.gz)
+       (tar-ball 
+	http://download.gna.org/muse-el/muse-3.20.tar.gz)
        "a publishing environment for Emacs."
        nil
-       ("cd muse-latest && EMACS=$EMACS make"))
+       ("cd muse-3.20 && EMACS=$EMACS make"))
  (emacs-wiki library
              (tar-ball http://mwolson.org/static/dist/emacs-wiki/emacs-wiki-2.72.tar.gz)
              "Implementation of a Wiki by JohnWiegley"
@@ -194,12 +196,13 @@ from the web or from a local buffer"
 to write portable Emacs Lisp programs."
   nil
   ("EMACS=$EMACS make"))
- (python-mode-extension
-  library
-  (tar-ball http://sourceforge.net/projects/page/files/Python%20Mode%20Extrensions/Python-Mode-Extension-1.0/py-mode-ext-1.0.tgz/download py-mode-ext-1.0.tgz)
-  "python mode extensions"
-  nil
-  (:byte-compile))
+;; sorry url contains space does not supported
+;; (python-mode-extension
+;;  library
+;;  (tar-ball "http://sourceforge.net/projects/page/files/Python Mode Extrensions/Python-Mode-Extension-1.0/py-mode-ext-1.0.tgz/download py-mode-ext-1.0.tgz")
+;;  "python mode extensions"
+;;  nil
+;;  (:byte-compile))
  (python-mode
   library
   http://launchpadlibrarian.net/21781107/python-mode.el
@@ -207,15 +210,6 @@ to write portable Emacs Lisp programs."
 and developing Python programs"
   nil
   (:byte-compile))
- (pymacs
-  library
-  (git git://github.com/pinard/Pymacs.git)
-  "Pymacs is a powerful tool which, once started from Emacs, \
-allows both-way communication between Emacs Lisp and Python."
-  nil
-  ("sudo python setup.py install"
-   ;;(:byte-compile)
-   ))
  (ipython
   library
   http://ipython.scipy.org/dist/ipython.el
@@ -230,14 +224,33 @@ python-mode"
   (:byte-compile))
  (rosemacs
   Library
-  http://code.ros.org/svn/ros/stacks/ros/tags/cturtle/tools/rosemacs
+  (svn http://code.ros.org/svn/ros/stacks/ros/tags/cturtle/tools/rosemacs)
   "emacs utilities for ROS(Robot Operating System)"
   nil
   (:byte-compile))
  (jsk-rosemacs
-  Library
-  https://jsk-ros-pkg.svn.sourceforge.net/svnroot/jsk-ros-pkg/trunk/jsk_ros_tools/jsk-rosemacs
+  library
+  (svn http://jsk-ros-pkg.svn.sourceforge.net/svnroot/jsk-ros-pkg/trunk/jsk_ros_tools/jsk-rosemacs)
   "emacs utilities for ROS(Robot Operating System) written by R.Ueda(garaemon)."
   (anything auto-complete)              ;for popup.el
+  (:byte-compile))
+ (bm
+  library
+  (cvs :pserver:anonymous@cvs.sv.gnu.org:/sources/bm bm)
+  "visible, buffer local, bookmarks"
+  nil
+  (:byte-compile))
+ (svn-clients
+  library
+  (svn
+   http://svn.apache.org/repos/asf/subversion/trunk/contrib/client-side/emacs)
+  "vc-svn, dsvn and psvn for svn client on emacs"
+  nil
+  (:byte-compile))
+ (yaml-mode
+  library
+  (git http://github.com/yoshiki/yaml-mode.git)
+  "simple major mode ro edit YAML file for emacs"
+  nil
   (:byte-compile))
  )

@@ -82,8 +82,7 @@
 
 (defun wget (url dir)
   "download `url' to `dir' using wget command."
-  (format-status "downloading"
-                 (format "%s" url))
+  (format-status "downloading" (format "%s" url))
   (debug-format* "now downloading %s to %s...\n" url dir)
   (call-process* "wget" "-N" url "-P" dir))
 
@@ -95,9 +94,9 @@ associated list from the element list. If you want to access
 the associated list, use package-accessors defined by `defpackage-accessor'."
   (destructuring-bind (name type sources &optional doc depend install)
       list
-    (list (cons :name name)
+    (list (cons :name (string->symbol name))
           (cons :type type)
-          (cons :sources sources)
+          (cons :sources (string->symbol sources))
           (cons :documentation doc)
           (cons :depend depend)
           (cons :install install))))
@@ -429,10 +428,6 @@ whose name is (name-of pkg), "
          ))))
    (t (error "Error: not supported source %s" source))))
 
-(defun update-sources ()
-  "Update the all of source files. Each source file has its URL in car."
-  (error "Error: not supported"))
-
 (defun parse-source (fname)
   "make the package associated lists of a source file `fname'."
   (with-open-file (str fname)
@@ -489,8 +484,7 @@ this function search the all URL of source files and wget it with -N option."
         (format-status "updating"
                        (format "%s" (file-name-nondirectory f)))
         (debug-format* "updating %s from %s\n" f url)
-        (if (not (=  0 (wget url *emacs-settings-source-dir*)))
-            (format* "download failed %s\n" f))))
+	(wget url *emacs-settings-source-dir*)))
     t))
 
 (defun cvs-upgrade-package (package)
@@ -566,3 +560,10 @@ currently only supports .el files."
     (dolist (p packages)
       (exec-install-commands p))
     ))
+
+(defun string->symbol (arg)
+  (if (atom arg)
+      (if (symbolp arg)
+	  arg
+	(intern arg))
+    (mapcar #'string->symbol arg)))
