@@ -85,7 +85,17 @@ emacs_settings_add() {
     if debug_mode ; then
         debug_echo add $target_url source file to $SOURCES_DIR
     fi
-    wget -N $target_url -O $SOURCES_DIR/`basename $target_url`
+    if [ ! -e $SOURCES_DIR/`basename $target_url` ]; then
+        wget $target_url -O $SOURCES_DIR/`basename $target_url`
+        if [ "$?" != "0" ]; then
+            rm $SOURCES_DIR/`basename $target_url`
+            echo "failed to fetch $target_url"
+            exit 1
+        fi
+    else
+        echo "you already have $SOURCES_DIR/`basename $target_url`"
+        echo "If you want to update it, you need to run emacs-settings update"
+    fi
 }
 
 emacs_settings_update() {
