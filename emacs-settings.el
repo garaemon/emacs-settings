@@ -330,17 +330,18 @@ whose name is (name-of pkg), "
   (let ((sources (sources-of pkg))
         (dir (package-directory pkg)))
     (unless (file-exists-p dir)
-      (make-directory dir)              ;first of all, make directory
-      (%download-package sources pkg)    ;download the source codes
-      ;; (exec-install-commands pkg)
-      ;; we need to add to load path
-      (add-to-installed pkg))))         ;add a package to emacs.d/installed
+      (make-directory dir))              ;first of all, make directory
+    (if (%download-package sources pkg)    ;download the source codes
+        ;; (exec-install-commands pkg)
+        ;; we need to add to load path
+        (add-to-installed pkg))))         ;add a package to emacs.d/installed
 
 (defun call-process* (command &rest args)
   (let ((result (apply #'call-process command nil t t args)))
     (if (not (= result 0))
         (format* "%s"
-                 (colorized-format :red "[Warn] %s is failed\n" command)))))
+                 (colorized-format :red "[Warn] %s is failed\n" command)))
+    (= result 0)))
 
 (defun tar-xvjf (tar-path dir)
   "call tar -xvjf `tar-path' -C `dir'"
