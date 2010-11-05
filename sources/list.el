@@ -260,4 +260,10 @@ python-mode"
   "simple major mode ro edit YAML file for emacs"
   nil
   (:byte-compile))
+ (ac-slime
+  library
+  (git git://github.com/purcell/ac-slime.git)
+  "Slime completion source for Emacs auto-complete package"
+  (auto-complete)
+  (:byte-compile))
  )
