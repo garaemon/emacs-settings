@@ -271,5 +271,5 @@ python-mode"
   (svn http://emacs-evernote-mode.googlecode.com/svn/trunk/)
   "Emacs Evernote Client Mode"
   nil
-  ("cd trunk/ruby && sudo ruby setup.rb"))
+  ("cd ruby && sudo ruby setup.rb"))
  )
