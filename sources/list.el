@@ -257,7 +257,7 @@ python-mode"
  (yaml-mode
   library
   (git http://github.com/yoshiki/yaml-mode.git)
-  "simple major mode ro edit YAML file for emacs"
+  "simple major mode to edit YAML file for emacs"
   nil
   (:byte-compile))
  (ac-slime
@@ -271,5 +271,5 @@ python-mode"
   (svn http://emacs-evernote-mode.googlecode.com/svn/trunk/)
   "Emacs Evernote Client Mode"
   nil
-  ("cd ruby && sudo ruby setup.rb"))
+  (:byte-compile))
  )
