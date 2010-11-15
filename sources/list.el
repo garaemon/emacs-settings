@@ -266,4 +266,10 @@ python-mode"
   "Slime completion source for Emacs auto-complete package"
   (auto-complete)
   (:byte-compile))
+ (evernote-mode
+  library
+  (svn http://emacs-evernote-mode.googlecode.com/svn/trunk/)
+  "Emacs Evernote Client Mode"
+  nil
+  ("cd trunk/ruby && sudo ruby setup.rb"))
  )
