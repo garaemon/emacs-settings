@@ -272,4 +272,10 @@ python-mode"
   "Emacs Evernote Client Mode"
   nil
   (:byte-compile))
+ (column-marker
+  library
+  http://www.emacswiki.org/emacs/download/column-marker.el
+  "Highlight certain character columns"
+  nil
+  (:byte-compile))
  )
