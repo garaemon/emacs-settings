@@ -278,4 +278,10 @@ python-mode"
   "Highlight certain character columns"
   nil
   (:byte-compile))
+ (markdown
+  library
+  (git git://jblevins.org/git/markdown-mode.git)
+  "a major mode for editing Markdown-formatted text files"
+  nil
+  (:byte-compile))
  )
