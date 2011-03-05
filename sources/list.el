@@ -284,10 +284,4 @@ python-mode"
   "a major mode for editing Markdown-formatted text files"
   nil
   (:byte-compile))
- (pysmell
-  library
-  (svn http://pysmell.googlecode.com/svn/trunk/)
-  "autocomplete helper for python"
-  nil
-  (:byte-compile))
  )
