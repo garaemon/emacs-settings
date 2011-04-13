@@ -284,4 +284,10 @@ python-mode"
   "a major mode for editing Markdown-formatted text files"
   nil
   (:byte-compile))
+ (rails
+  library
+  (svn svn://rubyforge.org/var/svn/emacs-rails/trunk)
+  "a emacs lisp to help ruby on rails application"
+  nil
+  (:byte-compile))
  )
