@@ -296,4 +296,16 @@ python-mode"
   "a emacs lisp to help ruby on rails application"
   (ruby)
   (:byte-compile))
+ (rhtml
+  library
+  (git https://github.com/eschulte/rhtml)
+  "a mode for editing rhtml and erb files"
+  (ruby)
+  (:byte-compile))
+ (js2-mode
+  library
+  (svn http://js2-mode.googlecode.com/svn/trunk/)
+  "a major mode for editing javascript"
+  nil
+  (:byte-compile))
  )
